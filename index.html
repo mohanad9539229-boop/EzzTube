@@ -1,281 +1,1220 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>عز تيوب - EzzTube</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#ff0000',
+              darkRed: '#cc0000',
+              bg: '#0f0f0f',
+              card: '#181818',
+              hover: '#272727',
+              border: '#303030'
+            }
+          },
+          fontFamily: {
+            sans: ['Tajawal', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* Custom Scrollbars and styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
     }
-
-    body {
-      background-color: #0f0f0f;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* الهيدر العلوي */
-    header {
-      position: sticky;
-      top: 0;
-      height: 60px;
-      background: rgba(15, 15, 15, 0.95);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      border-bottom: 1px solid rgba(220, 38, 38, 0.2);
-      z-index: 100;
-    }
-
-    .logo {
-      font-size: 22px;
-      font-weight: 800;
-      color: #dc2626;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      width: 40%;
-      max-width: 500px;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 8px 16px;
-      border-radius: 20px 0 0 20px;
-      border: 1px solid #333;
-      background: #121212;
-      color: #fff;
-      outline: none;
-    }
-
-    .search-box button {
-      padding: 8px 16px;
-      border-radius: 0 20px 20px 0;
-      border: 1px solid #333;
-      border-right: none;
-      background: #222;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    /* التنسيق الرئيسي */
-    .main-container {
-      display: flex;
-      flex: 1;
-    }
-
-    /* القائمة الجانبية */
-    aside {
-      width: 200px;
+    ::-webkit-scrollbar-track {
       background: #0f0f0f;
-      padding: 15px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      border-left: 1px solid #222;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #374151;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4b5563;
+    }
+    
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
 
-    .side-item {
-      padding: 10px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      color: #aaa;
-      transition: 0.2s;
-      font-size: 14px;
-    }
-
-    .side-item:hover, .side-item.active {
-      background: #272727;
-      color: #fff;
-    }
-
-    /* منطقة المحتوى والفيديوهات */
-    main {
-      flex: 1;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    /* مشغل الفيديو الرئيسي */
-    .player-wrapper {
-      width: 100%;
-      max-width: 1000px;
-      margin: 0 auto;
-      background: #000;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    .player-container {
+    /* Aspect ratio styling */
+    .aspect-video-container {
       position: relative;
-      padding-bottom: 56.25%; /* 16:9 ratio */
+      padding-bottom: 56.25%;
       height: 0;
+      overflow: hidden;
     }
-
-    .player-container iframe {
+    .aspect-video-container iframe {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      border: none;
     }
 
-    /* شبكة الكروت (Grid) */
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 20px;
-    }
-
-    .video-card {
-      background: #181818;
-      border-radius: 10px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.2s;
-    }
-
-    .video-card:hover {
-      transform: translateY(-4px);
-      background: #222;
-    }
-
-    .thumbnail {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-      background: #282828;
-    }
-
-    .video-info {
-      padding: 12px;
-    }
-
-    .video-title {
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.3;
-      margin-bottom: 6px;
+    /* Line clamp for video titles */
+    .line-clamp-2 {
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-
-    .video-meta {
-      font-size: 12px;
-      color: #aaa;
-    }
-
-    @media (max-width: 768px) {
-      aside { display: none; }
-      .search-box { width: 60%; }
-    }
   </style>
 </head>
-<body>
+<body class="bg-[#0f0f0f] text-white font-sans antialiased min-h-screen flex flex-col overflow-x-hidden selection:bg-red-600 selection:text-white">
 
-  <!-- الهيدر -->
-  <header>
-    <div class="logo">
-      <span>📺</span> عز تيوب
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-50 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-[#272727] px-4 h-14 flex items-center justify-between gap-4">
+    
+    <!-- Right side: Menu Button & Brand Logo -->
+    <div class="flex items-center gap-4 min-w-[180px]">
+      <button id="toggleSidebarBtn" class="p-2 text-gray-300 hover:text-white hover:bg-[#272727] rounded-full transition" title="القائمة">
+        <i class="fa-solid fa-bars text-lg"></i>
+      </button>
+      <div onclick="navigateTo('home')" class="flex items-center gap-2 cursor-pointer group">
+        <div class="bg-gradient-to-tr from-red-700 via-red-600 to-red-500 text-white p-1.5 px-2.5 rounded-2xl shadow-lg shadow-red-900/30 group-hover:scale-105 transition transform">
+          <i class="fa-solid fa-play text-sm"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-extrabold text-xl tracking-tight flex items-center gap-1">
+            عز <span class="text-red-600">تيوب</span>
+            <span class="text-[10px] bg-red-600/20 text-red-500 font-semibold px-1.5 py-0.5 rounded border border-red-500/30">PRO</span>
+          </span>
+        </div>
+      </div>
     </div>
-    <div class="search-box">
-      <input type="text" placeholder="بحث...">
-      <button>🔍</button>
+
+    <!-- Center: Search Bar & Voice Search -->
+    <div class="flex-1 max-w-2xl flex items-center justify-center gap-2">
+      <form id="searchForm" onsubmit="handleSearch(event)" class="flex w-full max-w-lg items-center">
+        <div class="relative w-full">
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="ابحث عن فيديوهات، قنوات، أو مواضيع جديدة..." 
+            class="w-full bg-[#121212] border border-[#303030] text-white px-4 py-2 pr-4 pl-10 rounded-r-full focus:outline-none focus:border-red-600 text-sm transition placeholder-gray-500"
+          />
+          <button type="button" onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <button type="submit" class="bg-[#222222] border border-r-0 border-[#303030] hover:bg-[#272727] text-gray-200 px-5 py-2 rounded-l-full transition flex items-center justify-center">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+
+      <button onclick="openVoiceModal()" class="bg-[#222] hover:bg-[#272727] p-2.5 rounded-full text-gray-200 transition hidden sm:flex items-center justify-center" title="البحث بالصوت عبر الذكاء الاصطناعي">
+        <i class="fa-solid fa-microphone text-sm"></i>
+      </button>
+    </div>
+
+    <!-- Left side: User Profile, Notifications & Actions -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <button onclick="openUploadModal()" class="bg-[#272727] hover:bg-[#383838] px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 transition border border-[#383838]">
+        <i class="fa-solid fa-plus text-red-500 text-sm"></i>
+        <span class="hidden md:inline">إنشاء</span>
+      </button>
+      
+      <button onclick="toggleNotifications()" class="relative p-2.5 text-gray-300 hover:text-white hover:bg-[#272727] rounded-full transition">
+        <i class="fa-solid fa-bell"></i>
+        <span class="absolute top-1 right-1 bg-red-600 text-[10px] text-white rounded-full w-4 h-4 flex items-center justify-center font-bold">3</span>
+      </button>
+
+      <div class="relative">
+        <button onclick="toggleUserMenu()" class="flex items-center gap-2 focus:outline-none">
+          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="المستخدم" class="w-8 h-8 rounded-full border border-red-600/50 object-cover">
+        </button>
+        <!-- Dropdown Menu -->
+        <div id="userMenu" class="hidden absolute left-0 mt-2 w-56 bg-[#212121] border border-[#383838] rounded-xl shadow-2xl py-2 z-50 text-sm">
+          <div class="px-4 py-2 border-b border-[#383838]">
+            <p class="font-bold text-white">عز الدين</p>
+            <p class="text-xs text-gray-400">ezz@ezztube.com</p>
+          </div>
+          <a href="#" onclick="navigateTo('history'); toggleUserMenu();" class="block px-4 py-2 text-gray-300 hover:bg-[#383838] hover:text-white"><i class="fa-solid fa-history ml-2 text-red-500"></i>سجل المشاهدة</a>
+          <a href="#" onclick="navigateTo('liked'); toggleUserMenu();" class="block px-4 py-2 text-gray-300 hover:bg-[#383838] hover:text-white"><i class="fa-solid fa-thumbs-up ml-2 text-red-500"></i>الفيديوهات المفضلة</a>
+          <a href="#" onclick="showToast('تم تفعيل وضع التصفح الخفي'); toggleUserMenu();" class="block px-4 py-2 text-gray-300 hover:bg-[#383838] hover:text-white"><i class="fa-solid fa-user-secret ml-2 text-gray-400"></i>وضع التصفح الخفي</a>
+          <div class="border-t border-[#383838] my-1"></div>
+          <a href="#" onclick="showToast('إعدادات منصة عز تيوب'); toggleUserMenu();" class="block px-4 py-2 text-gray-300 hover:bg-[#383838] hover:text-white"><i class="fa-solid fa-gear ml-2 text-gray-400"></i>الإعدادات</a>
+        </div>
+      </div>
     </div>
   </header>
 
-  <div class="main-container">
-    <!-- القائمة الجانبية -->
-    <aside>
-      <div class="side-item active">🏠 الرئيسية</div>
-      <div class="side-item">🔥 الشائع</div>
-      <div class="side-item">📁 الاشتراكات</div>
-      <div class="side-item">📚 المكتبة</div>
+  <!-- Main Container (Sidebar + Content Area) -->
+  <div class="flex flex-1 overflow-hidden relative">
+
+    <!-- Collapsible Sidebar -->
+    <aside id="sidebar" class="w-64 bg-[#0f0f0f] border-l border-[#272727] flex flex-col justify-between shrink-0 transition-all duration-300 z-40 select-none">
+      <div class="p-3 space-y-1 overflow-y-auto no-scrollbar max-h-[calc(100vh-60px)]">
+        
+        <!-- Main Navigation Links -->
+        <div class="space-y-1">
+          <button onclick="navigateTo('home')" id="nav-home" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-white font-medium text-sm transition active bg-[#272727]">
+            <i class="fa-solid fa-house text-lg text-red-500 w-6"></i>
+            <span>الرئيسية</span>
+          </button>
+
+          <button onclick="navigateTo('shorts')" id="nav-shorts" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white font-medium text-sm transition">
+            <i class="fa-solid fa-bolt text-lg text-yellow-500 w-6"></i>
+            <span>مقاطع Shorts</span>
+          </button>
+
+          <button onclick="navigateTo('subscriptions')" id="nav-subscriptions" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white font-medium text-sm transition">
+            <i class="fa-solid fa-youtube text-lg text-red-600 w-6"></i>
+            <span>الاشتراكات</span>
+            <span class="mr-auto bg-red-600 text-[10px] text-white px-2 py-0.5 rounded-full font-bold">جديد</span>
+          </button>
+        </div>
+
+        <hr class="border-[#272727] my-3">
+
+        <!-- Library Section -->
+        <div class="space-y-1">
+          <div class="px-3 py-1 text-xs font-bold text-gray-400">أنت</div>
+          
+          <button onclick="navigateTo('history')" id="nav-history" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-rotate-left text-lg text-blue-400 w-6"></i>
+            <span>السجل</span>
+          </button>
+
+          <button onclick="navigateTo('liked')" id="nav-liked" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-thumbs-up text-lg text-emerald-400 w-6"></i>
+            <span>الفيديوهات الأعجبتني</span>
+          </button>
+
+          <button onclick="showToast('قائمة المشاهدة لاحقاً فارغة')" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-clock text-lg text-purple-400 w-6"></i>
+            <span>مشاهدة لاحقاً</span>
+          </button>
+        </div>
+
+        <hr class="border-[#272727] my-3">
+
+        <!-- Categories Section -->
+        <div class="space-y-1">
+          <div class="px-3 py-1 text-xs font-bold text-gray-400">استكشف التصنيفات</div>
+          
+          <button onclick="filterByCategory('ألعاب')" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-gamepad text-gray-400 w-6"></i>
+            <span>الألعاب والقيمنق</span>
+          </button>
+
+          <button onclick="filterByCategory('موسيقى')" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-music text-gray-400 w-6"></i>
+            <span>الموسيقى والأغاني</span>
+          </button>
+
+          <button onclick="filterByCategory('تقنية')" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-microchip text-gray-400 w-6"></i>
+            <span>التقنية والذكاء الاصطناعي</span>
+          </button>
+
+          <button onclick="filterByCategory('بودكاست')" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-podcast text-gray-400 w-6"></i>
+            <span>البودكاست واللقاءات</span>
+          </button>
+
+          <button onclick="filterByCategory('تعليم')" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-graduation-cap text-gray-400 w-6"></i>
+            <span>التعليم والبرمجة</span>
+          </button>
+        </div>
+
+        <!-- Subscribed Channels Quick List -->
+        <hr class="border-[#272727] my-3">
+        <div class="space-y-1">
+          <div class="px-3 py-1 text-xs font-bold text-gray-400">القنوات المُشترك فيها</div>
+          <div id="subscribedChannelsList" class="space-y-1">
+            <!-- Dynamic channels populated by JS -->
+          </div>
+        </div>
+
+        <div class="pt-6 pb-2 px-3 text-[11px] text-gray-500 leading-relaxed border-t border-[#272727] mt-4">
+          <p>© 2026 منصة عز تيوب - EzzTube</p>
+          <p>جميع حقوق الفيديوهات والتضمين محفوظة لأصحابها على يوتيوب.</p>
+        </div>
+
+      </div>
     </aside>
 
-    <!-- المحتوى والمشغل -->
-    <main>
-      <!-- مشغل الفيديو العلوي -->
-      <div class="player-wrapper">
-        <div class="player-container">
-          <iframe 
-            id="mainPlayer"
-            src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=0&rel=0" 
-            title="عز تيوب" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-          </iframe>
+    <!-- Content Area -->
+    <main id="mainContent" class="flex-1 overflow-y-auto p-4 md:p-6 bg-[#0f0f0f] flex flex-col">
+      
+      <!-- Category Tags Chips Bar (Home View Only) -->
+      <div id="categoryChipsBar" class="flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar mb-2">
+        <!-- Generated by JS -->
+      </div>
+
+      <!-- VIEW 1: Video Grid Feed (Home / Search / Subscriptions / History) -->
+      <div id="feedView" class="w-full">
+        <div id="searchBanner" class="hidden mb-6 bg-gradient-to-r from-red-900/40 via-red-800/20 to-transparent p-4 rounded-2xl border border-red-500/30 flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-sparkles text-yellow-400"></i>
+              نتائج البحث المباشرة المفتوحة: <span id="searchQueryText" class="text-red-400 underline"></span>
+            </h2>
+            <p class="text-xs text-gray-300 mt-1">تتم جلب وتحليل النتائج مباشرة باستخدام ذكاء عز تيوب الاصطناعي</p>
+          </div>
+          <button onclick="resetFeed()" class="bg-[#272727] hover:bg-[#383838] px-3 py-1.5 rounded-xl text-xs text-gray-200 transition">
+            إلغاء البحث
+          </button>
+        </div>
+
+        <!-- Video Cards Grid -->
+        <div id="videoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-7">
+          <!-- Video Cards render here -->
         </div>
       </div>
 
-      <h2 style="font-size: 18px; color: #fff;">مقترحات لك</h2>
-
-      <!-- شبكة الفيديوهات -->
-      <div class="video-grid">
+      <!-- VIEW 2: Video Player / Watch Page -->
+      <div id="watchView" class="hidden w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
         
-        <div class="video-card" onclick="changeVideo('dQw4w9WgXcQ')">
-          <img class="thumbnail" src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Video 1">
-          <div class="video-info">
-            <div class="video-title">فيديو 1 - عنوان الفيديو المقترح</div>
-            <div class="video-meta">عز تيوب • 100 ألف مشاهدة</div>
+        <!-- Main Player & Info Column -->
+        <div class="flex-1 flex flex-col">
+          <!-- Video Frame Container -->
+          <div class="w-full bg-black rounded-2xl overflow-hidden shadow-2xl border border-[#272727] aspect-video-container">
+            <iframe 
+              id="mainVideoPlayer" 
+              src="" 
+              title="EzzTube Video Player" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- Video Details Section -->
+          <div class="mt-4">
+            <h1 id="watchVideoTitle" class="text-lg md:text-xl font-bold text-white leading-snug">
+              عنوان الفيديو هنا
+            </h1>
+
+            <!-- Actions Bar & Channel Info -->
+            <div class="mt-3 flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#272727]">
+              <!-- Channel Info -->
+              <div class="flex items-center gap-3">
+                <img id="watchChannelAvatar" src="" alt="شعار القناة" class="w-11 h-11 rounded-full object-cover border border-red-600/40">
+                <div>
+                  <h3 id="watchChannelName" class="font-bold text-white text-base flex items-center gap-1.5">
+                    اسم القناة <i class="fa-solid fa-circle-check text-xs text-gray-400"></i>
+                  </h3>
+                  <p id="watchSubscribersCount" class="text-xs text-gray-400">1.2M مشترك</p>
+                </div>
+                <button id="subscribeBtn" onclick="toggleSubscribeCurrent()" class="mr-3 bg-white text-black font-bold px-4 py-2 rounded-full text-xs hover:bg-gray-200 transition shadow-lg">
+                  اشتراك
+                </button>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex items-center gap-2 flex-wrap text-sm">
+                <div class="flex items-center bg-[#272727] rounded-full overflow-hidden border border-[#383838]">
+                  <button id="likeBtn" onclick="toggleLikeCurrent()" class="flex items-center gap-2 px-4 py-2 hover:bg-[#383838] transition text-gray-200">
+                    <i class="fa-regular fa-thumbs-up text-base"></i>
+                    <span id="watchLikesCount">12K</span>
+                  </button>
+                  <div class="w-[1px] h-5 bg-[#383838]"></div>
+                  <button onclick="showToast('تم تسجيل عدم الإعجاب')" class="px-3 py-2 hover:bg-[#383838] transition text-gray-200">
+                    <i class="fa-regular fa-thumbs-down text-base"></i>
+                  </button>
+                </div>
+
+                <button onclick="openShareModal()" class="flex items-center gap-2 bg-[#272727] hover:bg-[#383838] px-4 py-2 rounded-full transition text-gray-200 border border-[#383838]">
+                  <i class="fa-solid fa-share"></i>
+                  <span>مشاركة</span>
+                </button>
+
+                <button onclick="saveCurrentToWatchLater()" class="flex items-center gap-2 bg-[#272727] hover:bg-[#383838] px-4 py-2 rounded-full transition text-gray-200 border border-[#383838]">
+                  <i class="fa-regular fa-bookmark"></i>
+                  <span>حفظ</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Expandable Video Description Box -->
+            <div class="mt-4 bg-[#212121] p-4 rounded-2xl text-sm border border-[#2e2e2e]">
+              <div class="flex items-center gap-3 text-xs text-gray-300 font-semibold mb-2">
+                <span id="watchViewsCount">250,000 مشاهدة</span>
+                <span>•</span>
+                <span id="watchTimeAgo">قبل يومين</span>
+                <span id="watchCategoryTag" class="bg-red-600/20 text-red-400 px-2.5 py-0.5 rounded-full border border-red-500/30">تقنية</span>
+              </div>
+              <p id="watchDescriptionText" class="text-gray-300 leading-relaxed whitespace-pre-line">
+                وصف الفيديو التفصيلي هنا...
+              </p>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="mt-6">
+              <div class="flex items-center gap-4 mb-4">
+                <h3 class="font-bold text-lg text-white"><span id="commentsCount">124</span> تعليقًا</h3>
+                <button class="text-xs text-gray-400 hover:text-white flex items-center gap-1">
+                  <i class="fa-solid fa-arrow-down-short-wide"></i> ترتيب حسب
+                </button>
+              </div>
+
+              <!-- Add Comment Input -->
+              <div class="flex gap-3 mb-6">
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="المستخدم" class="w-10 h-10 rounded-full object-cover">
+                <div class="flex-1">
+                  <input type="text" id="newCommentInput" placeholder="إضافة تعليق علني في عز تيوب..." class="w-full bg-transparent border-b border-[#383838] focus:border-red-600 text-sm text-white py-2 focus:outline-none transition">
+                  <div class="flex justify-end gap-2 mt-2">
+                    <button onclick="document.getElementById('newCommentInput').value=''" class="px-3 py-1.5 text-xs text-gray-400 hover:text-white transition">إلغاء</button>
+                    <button onclick="postComment()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-1.5 rounded-full text-xs transition">تعليق</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Comments List -->
+              <div id="commentsList" class="space-y-4">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+
           </div>
         </div>
 
-        <div class="video-card" onclick="changeVideo('5qap5aO4i9A')">
-          <img class="thumbnail" src="https://img.youtube.com/vi/5qap5aO4i9A/hqdefault.jpg" alt="Video 2">
-          <div class="video-info">
-            <div class="video-title">فيديو 2 - موسيقى هادئة وخلفيات</div>
-            <div class="video-meta">عز تيوب • 50 ألف مشاهدة</div>
+        <!-- Sidebar Up Next Videos Column -->
+        <div class="w-full lg:w-80 shrink-0 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-base text-white">التالي في عز تيوب</h3>
+            <label class="flex items-center gap-2 cursor-pointer text-xs text-gray-400">
+              <span>تشغيل تلقائي</span>
+              <input type="checkbox" checked class="accent-red-600">
+            </label>
           </div>
-        </div>
 
-        <div class="video-card" onclick="changeVideo('LXb3EKWsInQ')">
-          <img class="thumbnail" src="https://img.youtube.com/vi/LXb3EKWsInQ/hqdefault.jpg" alt="Video 3">
-          <div class="video-info">
-            <div class="video-title">فيديو 3 - طبيعة وتجربة عرض 4K</div>
-            <div class="video-meta">عز تيوب • 1M مشاهدة</div>
-          </div>
-        </div>
-
-        <div class="video-card" onclick="changeVideo('jNQXAC9IVRw')">
-          <img class="thumbnail" src="https://img.youtube.com/vi/jNQXAC9IVRw/hqdefault.jpg" alt="Video 4">
-          <div class="video-info">
-            <div class="video-title">فيديو 4 - أول فيديو على يوتيوب</div>
-            <div class="video-meta">عز تيوب • 200M مشاهدة</div>
+          <div id="recommendedVideosList" class="space-y-3">
+            <!-- Sidebar video items render here -->
           </div>
         </div>
 
       </div>
+
+      <!-- VIEW 3: Shorts Player View -->
+      <div id="shortsView" class="hidden w-full flex-1 flex items-center justify-center py-4">
+        <div class="relative w-full max-w-sm h-[75vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-[#303030] flex flex-col justify-between">
+          
+          <iframe id="shortsIframe" src="" class="absolute inset-0 w-full h-full border-0 pointer-events-auto" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          
+          <!-- Shorts Controls Overlay -->
+          <div class="relative z-10 p-4 bg-gradient-to-t from-black/80 via-transparent to-black/40 flex flex-col justify-between h-full pointer-events-none">
+            <!-- Top Header -->
+            <div class="flex justify-between items-center text-white pointer-events-auto">
+              <span class="bg-red-600 font-bold px-2.5 py-1 rounded-full text-xs flex items-center gap-1 shadow">
+                <i class="fa-solid fa-bolt"></i> Shorts
+              </span>
+              <button onclick="nextShort()" class="bg-black/50 p-2 rounded-full text-white hover:bg-black transition">
+                <i class="fa-solid fa-arrow-down"></i>
+              </button>
+            </div>
+
+            <!-- Bottom Video Info & Action Buttons -->
+            <div class="flex items-end justify-between pointer-events-auto">
+              <div class="text-white space-y-2 max-w-[75%]">
+                <div class="flex items-center gap-2">
+                  <img id="shortsChannelAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" class="w-9 h-9 rounded-full border border-white">
+                  <span id="shortsChannelName" class="font-bold text-sm">@ChannelName</span>
+                  <button class="bg-red-600 text-white text-xs px-2.5 py-1 rounded-full font-bold">اشتراك</button>
+                </div>
+                <p id="shortsTitle" class="text-xs font-medium line-clamp-2">عنوان مقطع شورتس القصير هنا مع الهاشتاقات...</p>
+              </div>
+
+              <!-- Sidebar Actions (Like, Comment, Share) -->
+              <div class="flex flex-col gap-4 items-center">
+                <button onclick="showToast('تم الإعجاب بالشورت')" class="flex flex-col items-center text-white">
+                  <div class="w-10 h-10 bg-black/50 hover:bg-red-600/80 rounded-full flex items-center justify-center transition">
+                    <i class="fa-solid fa-heart text-lg"></i>
+                  </div>
+                  <span class="text-[11px] mt-1 font-bold">45K</span>
+                </button>
+
+                <button onclick="showToast('فتح تعليقات الشورت')" class="flex flex-col items-center text-white">
+                  <div class="w-10 h-10 bg-black/50 hover:bg-black rounded-full flex items-center justify-center transition">
+                    <i class="fa-solid fa-comment text-lg"></i>
+                  </div>
+                  <span class="text-[11px] mt-1 font-bold">1.2K</span>
+                </button>
+
+                <button onclick="openShareModal()" class="flex flex-col items-center text-white">
+                  <div class="w-10 h-10 bg-black/50 hover:bg-black rounded-full flex items-center justify-center transition">
+                    <i class="fa-solid fa-share text-lg"></i>
+                  </div>
+                  <span class="text-[11px] mt-1 font-bold">مشاركة</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 
+  <!-- Modals & Overlays -->
+
+  <!-- Share Modal -->
+  <div id="shareModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#212121] border border-[#383838] w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b border-[#383838] pb-3">
+        <h3 class="font-bold text-lg text-white">مشاركة الفيديو</h3>
+        <button onclick="closeShareModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <p class="text-xs text-gray-300">انسخ الرابط أدناه أو شاركه عبر وسائل التواصل الاجتماعي:</p>
+      <div class="flex items-center bg-[#121212] border border-[#383838] rounded-xl p-2">
+        <input id="shareLinkInput" readonly type="text" value="https://ezztube.com/watch?v=demo" class="bg-transparent text-xs text-gray-200 w-full px-2 focus:outline-none">
+        <button onclick="copyShareLink()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-1.5 rounded-lg transition shrink-0">
+          نسخ الرابط
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Voice AI Search Modal -->
+  <div id="voiceModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#212121] border border-[#383838] w-full max-w-md rounded-3xl p-8 shadow-2xl flex flex-col items-center text-center space-y-6">
+      <div class="relative">
+        <div class="w-20 h-20 bg-red-600/20 border-2 border-red-600 rounded-full flex items-center justify-center text-red-500 text-3xl animate-pulse">
+          <i class="fa-solid fa-microphone"></i>
+        </div>
+      </div>
+      <div>
+        <h3 class="font-extrabold text-xl text-white">البحث الصوتي الذكي</h3>
+        <p class="text-xs text-gray-400 mt-2">تحدث الآن... يبحث عز تيوب في جميع الفيديوهات والقنوات</p>
+      </div>
+      <div class="flex gap-3 w-full">
+        <button onclick="closeVoiceModal()" class="w-full bg-[#383838] hover:bg-[#484848] text-white py-2.5 rounded-xl font-bold text-xs transition">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload / Create Modal -->
+  <div id="uploadModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#212121] border border-[#383838] w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b border-[#383838] pb-3">
+        <h3 class="font-bold text-lg text-white flex items-center gap-2">
+          <i class="fa-solid fa-cloud-arrow-up text-red-500"></i> نشر فيديو جديد في عز تيوب
+        </h3>
+        <button onclick="closeUploadModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-gray-300 font-bold mb-1">عنوان الفيديو</label>
+          <input type="text" id="uploadTitle" placeholder="أدخل عنواناً جذاباً للفيديو..." class="w-full bg-[#121212] border border-[#383838] rounded-xl p-2.5 text-white focus:border-red-600 outline-none">
+        </div>
+        <div>
+          <label class="block text-gray-300 font-bold mb-1">رابط YouTube Embed أو ID الفيديو</label>
+          <input type="text" id="uploadVideoId" placeholder="مثال: dQw4w9WgXcQ" class="w-full bg-[#121212] border border-[#383838] rounded-xl p-2.5 text-white focus:border-red-600 outline-none">
+        </div>
+        <div>
+          <label class="block text-gray-300 font-bold mb-1">التصنيف</label>
+          <select id="uploadCategory" class="w-full bg-[#121212] border border-[#383838] rounded-xl p-2.5 text-white focus:border-red-600 outline-none">
+            <option value="تقنية">تقنية وذكاء اصطناعي</option>
+            <option value="ألعاب">ألعاب وتسلية</option>
+            <option value="موسيقى">موسيقى وأغاني</option>
+            <option value="بودكاست">بودكاست وحوارات</option>
+            <option value="تعليم">تعليم وبرمجة</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeUploadModal()" class="px-4 py-2 text-xs text-gray-300 hover:text-white">إلغاء</button>
+        <button onclick="submitNewVideo()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-xl text-xs transition">نشر الفيديو</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Bar -->
+  <div id="toast" class="fixed bottom-5 left-5 z-50 bg-red-600 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-3 transition transform translate-y-20 opacity-0">
+    <i class="fa-solid fa-circle-info text-sm"></i>
+    <span id="toastMessage">تنبيه من عز تيوب</span>
+  </div>
+
   <script>
-    // وظيفة تغيير الفيديو عند الضغط على أي كارت
-    function changeVideo(videoId) {
-      const player = document.getElementById('mainPlayer');
-      player.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`;
+    /* ==========================================================================
+       1. DATA STORES & INITIAL DATASET FOR EZZTUBE
+       ========================================================================== */
+    
+    const INITIAL_VIDEOS = [
+      {
+        id: 'C0DPdy98e4c',
+        title: 'بودكاست فنجان: كيف يفكر العقل البشري بالذكاء الاصطناعي؟',
+        channelName: 'ثمانية - Thmanyah',
+        channelAvatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100',
+        views: '1.4M مشاهدة',
+        timeAgo: 'قبل 3 أيام',
+        duration: '1:42:10',
+        category: 'بودكاست',
+        description: 'حلقة مميزة مناقشة مع الخبراء حول مستقبل الذكاء الاصطناعي وتأثيره على الوظائف والتكنولوجيا المستقبلية.\n\nتنسيق عز تيوب حصري.',
+        subscribers: '3.2M'
+      },
+      {
+        id: 'dQw4w9WgXcQ',
+        title: 'روائع الموسيقى العالمية - أفضل مقطع كلاسيكي ممتع',
+        channelName: 'عز ميوزك - EzzMusic',
+        channelAvatar: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100',
+        views: '850K مشاهدة',
+        timeAgo: 'قبل أسبوع',
+        duration: '3:32',
+        category: 'موسيقى',
+        description: 'استمع لأفضل المقاطع الموسيقية بجودة فائقة بدقة عالية علي عز تيوب.',
+        subscribers: '890K'
+      },
+      {
+        id: '5qap5aO4i9A',
+        title: 'Lofi Hip Hop Radio - بيتس هادئة للمذاكرة والاسترخاء 24/7',
+        channelName: 'Lofi Girl Arabia',
+        channelAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100',
+        views: '12M مشاهدة',
+        timeAgo: 'بث مباشر',
+        duration: 'مباشر',
+        category: 'موسيقى',
+        description: 'موسيقى هادئة تساعدك على التركيز أثناء العمل أو الدراسة بدقة عالية الصوت.',
+        subscribers: '14M'
+      },
+      {
+        id: '3JZ_D3ELwOQ',
+        title: 'كورس احتراف تطوير المواقع وتطبيقات الويب لعام 2026',
+        channelName: 'عز كود - EzzCode',
+        channelAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100',
+        views: '320K مشاهدة',
+        timeAgo: 'قبل شهر',
+        duration: '45:12',
+        category: 'تعليم',
+        description: 'تعلم كيف تبني مواقع ويب كاملة وتطبيقات تفاعلية باستخدام أحدث التقنيات وTailwind CSS.',
+        subscribers: '510K'
+      },
+      {
+        id: 'LXb3EKWsInQ',
+        title: 'جولة سحرية في أعماق الطبيعة الخلابة بجودة 4K Ultra HD',
+        channelName: 'عالم الطبيعة',
+        channelAvatar: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=100',
+        views: '4.1M مشاهدة',
+        timeAgo: 'قبل شهرين',
+        duration: '11:20',
+        category: 'تقنية',
+        description: 'مشاهد طبيعية ساحرة بجودة 4K من جبال الألب والغابات الخضراء.',
+        subscribers: '1.1M'
+      },
+      {
+        id: 'jNQXAC9IVRw',
+        title: 'Me at the zoo - أول فيديو أسطوري تم رفعه في تاريخ يوتيوب',
+        channelName: 'jawed',
+        channelAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
+        views: '310M مشاهدة',
+        timeAgo: 'قبل 19 سنة',
+        duration: '0:19',
+        category: 'ترفيه',
+        description: 'المقطع الأول التاريخي لإنشاء منصات المشاركة الرقمية.',
+        subscribers: '4.5M'
+      },
+      {
+        id: 'tVlcKp3bWH8',
+        title: 'تختيم وتحليل أحدث ألعاب العالم المفتوح - تجربة أداء جرافيكس خيالية',
+        channelName: 'عز قيمنق - EzzGaming',
+        channelAvatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=100',
+        views: '670K مشاهدة',
+        timeAgo: 'قبل 5 أيام',
+        duration: '22:15',
+        category: 'ألعاب',
+        description: 'مراجعة وتختيم شامل لأحدث وأقوى الألعاب لهذا العام مع تجربة أعلى إعدادات الجرافيكس.',
+        subscribers: '750K'
+      },
+      {
+        id: 'M576WGiDBdQ',
+        title: 'كيف تعمل الصواريخ الفضائية وسفن الفضاء الحديثة؟',
+        channelName: 'العلوم والتكنولوجيا',
+        channelAvatar: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=100',
+        views: '920K مشاهدة',
+        timeAgo: 'قبل أسبوعين',
+        duration: '18:40',
+        category: 'تقنية',
+        description: 'تبسيط علم الفيزياء والهندسة الفضائية التي تمكن الإنسان من السفر عبر النجوم.',
+        subscribers: '1.8M'
+      }
+    ];
+
+    const SHORTS_DATA = [
+      { id: '8mJ609QkSjE', title: 'أسرع مهارة كروية خيالية في التاريخ! ⚽', channel: '@EzzSports', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100' },
+      { id: 'c9Fp06uJls0', title: 'تجربة حيلة ذكاء اصطناعي غريبة ولذيذة 🔥', channel: '@EzzTechShorts', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100' },
+      { id: '_2_pQOIs1eA', title: 'أجمل نغمة ومقطوعة موسيقية في 30 ثانية 🎵', channel: '@EzzBeats', avatar: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100' }
+    ];
+
+    const CATEGORIES = ['الكل', 'تقنية', 'ألعاب', 'موسيقى', 'بودكاست', 'تعليم', 'بث مباشر', 'جديد'];
+
+    const INITIAL_CHANNELS = [
+      { name: 'ثمانية - Thmanyah', avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100' },
+      { name: 'عز قيمنق - EzzGaming', avatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=100' },
+      { name: 'عز كود - EzzCode', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100' }
+    ];
+
+    /* App State */
+    let videos = [...INITIAL_VIDEOS];
+    let activeCategory = 'الكل';
+    let currentVideo = null;
+    let currentShortIndex = 0;
+    let likedVideoIds = new Set();
+    let subscribedChannels = new Set(['ثمانية - Thmanyah']);
+    let historyVideos = [];
+    let commentsStore = {
+      'C0DPdy98e4c': [
+        { user: 'سارة خالد', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100', text: 'بودكاست رائع جداً وممتع! شكراً عز تيوب.', time: 'قبل يوم' },
+        { user: 'محمد علي', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100', text: 'مستوى التقديم وجودة التنسيق احترافية للغاية.', time: 'قبل 5 ساعات' }
+      ]
+    };
+
+    /* ==========================================================================
+       2. INITIALIZATION & UI RENDERING
+       ========================================================================== */
+
+    window.onload = function() {
+      renderCategoryChips();
+      renderSubscribedChannels();
+      renderVideoGrid(videos);
+    };
+
+    // Render Category Filter Chips
+    function renderCategoryChips() {
+      const container = document.getElementById('categoryChipsBar');
+      container.innerHTML = CATEGORIES.map(cat => `
+        <button onclick="filterByCategory('${cat}')" 
+          class="px-4 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap border shrink-0 ${
+            activeCategory === cat 
+            ? 'bg-white text-black border-white shadow-md scale-105' 
+            : 'bg-[#272727] text-gray-300 border-[#383838] hover:bg-[#383838] hover:text-white'
+          }">
+          ${cat}
+        </button>
+      `).join('');
+    }
+
+    // Render Subscribed Channels in Sidebar
+    function renderSubscribedChannels() {
+      const container = document.getElementById('subscribedChannelsList');
+      container.innerHTML = INITIAL_CHANNELS.map(ch => `
+        <div onclick="searchChannel('${ch.name}')" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#272727] cursor-pointer text-xs text-gray-300 hover:text-white transition">
+          <img src="${ch.avatar}" class="w-6 h-6 rounded-full object-cover border border-red-600/40">
+          <span class="truncate flex-1">${ch.name}</span>
+          <span class="w-2 h-2 rounded-full bg-red-600"></span>
+        </div>
+      `).join('');
+    }
+
+    // Render Video Grid
+    function renderVideoGrid(videoList) {
+      const container = document.getElementById('videoGrid');
+      if (videoList.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-16 text-center text-gray-400 space-y-3">
+            <i class="fa-solid fa-film text-4xl text-gray-600"></i>
+            <p class="font-bold text-base">لم نجد فيديوهات تطابق بحثك</p>
+            <button onclick="resetFeed()" class="bg-red-600 text-white font-bold px-4 py-2 rounded-xl text-xs">عرض جميع فيديوهات عز تيوب</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = videoList.map(v => `
+        <div class="video-card group cursor-pointer flex flex-col space-y-3" onclick="watchVideo('${v.id}')">
+          <!-- Thumbnail Container -->
+          <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-[#1f1f1f] border border-[#2a2a2a] group-hover:border-red-600/50 transition">
+            <img src="https://img.youtube.com/vi/${v.id}/hqdefault.jpg" 
+                 onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500'" 
+                 alt="${v.title}" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            <span class="absolute bottom-2 left-2 bg-black/80 text-white font-mono font-bold text-[11px] px-2 py-0.5 rounded-md backdrop-blur-sm">
+              ${v.duration}
+            </span>
+            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+              <div class="w-12 h-12 bg-red-600/90 text-white rounded-full flex items-center justify-center text-lg shadow-xl scale-90 group-hover:scale-100 transition">
+                <i class="fa-solid fa-play"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video Details -->
+          <div class="flex gap-3 px-1">
+            <img src="${v.channelAvatar}" alt="${v.channelName}" class="w-9 h-9 rounded-full object-cover border border-red-600/30 shrink-0">
+            <div class="flex-1 min-w-0">
+              <h3 class="font-bold text-sm text-white line-clamp-2 leading-snug group-hover:text-red-400 transition">
+                ${v.title}
+              </h3>
+              <p class="text-xs text-gray-400 mt-1 flex items-center gap-1 font-medium">
+                ${v.channelName} <i class="fa-solid fa-circle-check text-[10px] text-gray-500"></i>
+              </p>
+              <div class="text-[11px] text-gray-500 flex items-center gap-2 mt-0.5">
+                <span>${v.views}</span>
+                <span>•</span>
+                <span>${v.timeAgo}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* ==========================================================================
+       3. NAVIGATION & VIEWING MODES
+       ========================================================================== */
+
+    function navigateTo(viewName) {
+      document.getElementById('feedView').classList.add('hidden');
+      document.getElementById('watchView').classList.add('hidden');
+      document.getElementById('shortsView').classList.add('hidden');
+      document.getElementById('categoryChipsBar').classList.add('hidden');
+
+      // Update sidebar styling active states
+      document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('bg-[#272727]', 'text-white'));
+
+      if (viewName === 'home') {
+        document.getElementById('feedView').classList.remove('hidden');
+        document.getElementById('categoryChipsBar').classList.remove('hidden');
+        document.getElementById('nav-home').classList.add('bg-[#272727]', 'text-white');
+        // Stop watch player
+        document.getElementById('mainVideoPlayer').src = '';
+      } else if (viewName === 'shorts') {
+        document.getElementById('shortsView').classList.remove('hidden');
+        document.getElementById('nav-shorts').classList.add('bg-[#272727]', 'text-white');
+        document.getElementById('mainVideoPlayer').src = '';
+        loadShort(0);
+      } else if (viewName === 'subscriptions') {
+        document.getElementById('feedView').classList.remove('hidden');
+        document.getElementById('nav-subscriptions').classList.add('bg-[#272727]', 'text-white');
+        renderVideoGrid(videos.filter(v => subscribedChannels.has(v.channelName)));
+      } else if (viewName === 'history') {
+        document.getElementById('feedView').classList.remove('hidden');
+        document.getElementById('nav-history').classList.add('bg-[#272727]', 'text-white');
+        renderVideoGrid(historyVideos);
+      } else if (viewName === 'liked') {
+        document.getElementById('feedView').classList.remove('hidden');
+        document.getElementById('nav-liked').classList.add('bg-[#272727]', 'text-white');
+        renderVideoGrid(videos.filter(v => likedVideoIds.has(v.id)));
+      }
+      
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Open Watch Video Page
+    function watchVideo(videoId) {
+      const vid = videos.find(v => v.id === videoId) || INITIAL_VIDEOS[0];
+      currentVideo = vid;
+
+      // Add to History
+      if (!historyVideos.some(h => h.id === vid.id)) {
+        historyVideos.unshift(vid);
+      }
+
+      // Hide Feed / Show Watch
+      document.getElementById('feedView').classList.add('hidden');
+      document.getElementById('categoryChipsBar').classList.add('hidden');
+      document.getElementById('shortsView').classList.add('hidden');
+      document.getElementById('watchView').classList.remove('hidden');
+
+      // Populate Player & Metadata
+      const iframe = document.getElementById('mainVideoPlayer');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${vid.id}?autoplay=1&rel=0`;
+
+      document.getElementById('watchVideoTitle').innerText = vid.title;
+      document.getElementById('watchChannelName').innerHTML = `${vid.channelName} <i class="fa-solid fa-circle-check text-xs text-gray-400"></i>`;
+      document.getElementById('watchChannelAvatar').src = vid.channelAvatar;
+      document.getElementById('watchSubscribersCount').innerText = `${vid.subscribers || '1M'} مشترك`;
+      document.getElementById('watchViewsCount').innerText = vid.views;
+      document.getElementById('watchTimeAgo').innerText = vid.timeAgo;
+      document.getElementById('watchCategoryTag').innerText = vid.category;
+      document.getElementById('watchDescriptionText').innerText = vid.description;
+
+      updateSubscribeButtonUI();
+      updateLikeButtonUI();
+      renderComments(vid.id);
+      renderRecommendedSidebar(vid.id);
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Render Recommended Sidebar Videos
+    function renderRecommendedSidebar(currentId) {
+      const recList = videos.filter(v => v.id !== currentId);
+      const container = document.getElementById('recommendedVideosList');
+      container.innerHTML = recList.map(v => `
+        <div onclick="watchVideo('${v.id}')" class="flex gap-3 group cursor-pointer hover:bg-[#212121] p-1.5 rounded-xl transition">
+          <div class="relative w-36 aspect-video rounded-xl overflow-hidden bg-black shrink-0 border border-[#2d2d2d]">
+            <img src="https://img.youtube.com/vi/${v.id}/hqdefault.jpg" class="w-full h-full object-cover group-hover:scale-105 transition">
+            <span class="absolute bottom-1 left-1 bg-black/80 text-white text-[9px] font-mono font-bold px-1 rounded">
+              ${v.duration}
+            </span>
+          </div>
+          <div class="flex-1 min-w-0 flex flex-col justify-center">
+            <h4 class="font-bold text-xs text-white line-clamp-2 leading-snug group-hover:text-red-400 transition">
+              ${v.title}
+            </h4>
+            <p class="text-[11px] text-gray-400 mt-1 font-medium">${v.channelName}</p>
+            <p class="text-[10px] text-gray-500">${v.views}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Filter by category
+    function filterByCategory(cat) {
+      activeCategory = cat;
+      renderCategoryChips();
+      if (cat === 'الكل') {
+        renderVideoGrid(videos);
+      } else {
+        renderVideoGrid(videos.filter(v => v.category === cat));
+      }
+      navigateTo('home');
+    }
+
+    // Reset Search Feed
+    function resetFeed() {
+      document.getElementById('searchBanner').classList.add('hidden');
+      document.getElementById('searchInput').value = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      videos = [...INITIAL_VIDEOS];
+      activeCategory = 'الكل';
+      renderCategoryChips();
+      renderVideoGrid(videos);
+      navigateTo('home');
+    }
+
+    /* ==========================================================================
+       4. GEMINI AI POWERED LIVE SEARCH ENGINE
+       ========================================================================== */
+
+    async function handleSearch(event) {
+      event.preventDefault();
+      const query = document.getElementById('searchInput').value.trim();
+      if (!query) return;
+
+      document.getElementById('clearSearchBtn').classList.remove('hidden');
+      document.getElementById('searchBanner').classList.remove('hidden');
+      document.getElementById('searchQueryText').innerText = query;
+
+      showToast('جاري البحث عبر عز تيوب الذكي...');
+
+      // Attempt AI search or dynamic fallback
+      try {
+        const aiResults = await searchWithGeminiAI(query);
+        if (aiResults && aiResults.length > 0) {
+          videos = [...aiResults, ...INITIAL_VIDEOS];
+          renderVideoGrid(aiResults);
+          showToast(`تم العثور على ${aiResults.length} فيديو جديد!`);
+        } else {
+          fallbackLocalSearch(query);
+        }
+      } catch (err) {
+        console.warn('AI Search Fallback:', err);
+        fallbackLocalSearch(query);
+      }
+
+      navigateTo('home');
+    }
+
+    // Gemini API Search Call
+    async function searchWithGeminiAI(userQuery) {
+      const apiKey = ""; // Canvas runtime API Key environment
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      const prompt = `أنت محرك بحث منصة عز تيوب (EzzTube). قم بتوفير قائمة بـ 6 فيديوهات حقيقية أو مقترحة بدقة حول موضوع البحث: "${userQuery}".
+      إرجاع النتائج فقط بهيكل JSON بالشكل التالي:
+      [
+        {
+          "id": "معرف فيديو يوتيوب حقيقي مثل dQw4w9WgXcQ أو C0DPdy98e4c أو LXb3EKWsInQ أو jNQXAC9IVRw أو tVlcKp3bWH8",
+          "title": "عنوان الفيديو بالعربية",
+          "channelName": "اسم القناة",
+          "channelAvatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100",
+          "views": "عدد المشاهدات مثل 500K مشاهدة",
+          "timeAgo": "قبل يومين",
+          "duration": "12:30",
+          "category": "تقنية",
+          "description": "وصف جذاب ومختصر للفيديو"
+        }
+      ]`;
+
+      const payload = {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json"
+        }
+      };
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      
+      if (textResponse) {
+        return JSON.parse(textResponse);
+      }
+      return null;
+    }
+
+    function fallbackLocalSearch(query) {
+      const filtered = INITIAL_VIDEOS.filter(v => 
+        v.title.toLowerCase().includes(query.toLowerCase()) || 
+        v.channelName.toLowerCase().includes(query.toLowerCase()) ||
+        v.category.toLowerCase().includes(query.toLowerCase())
+      );
+      renderVideoGrid(filtered);
+    }
+
+    function searchChannel(channelName) {
+      document.getElementById('searchInput').value = channelName;
+      handleSearch(new Event('submit'));
+    }
+
+    function clearSearch() {
+      resetFeed();
+    }
+
+    /* ==========================================================================
+       5. INTERACTIVE FEATURES (Shorts, Subscriptions, Comments, Modals)
+       ========================================================================== */
+
+    // Shorts Player
+    function loadShort(index) {
+      currentShortIndex = index;
+      const short = SHORTS_DATA[currentShortIndex];
+      const iframe = document.getElementById('shortsIframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${short.id}?autoplay=1&controls=0&loop=1&playlist=${short.id}`;
+      document.getElementById('shortsTitle').innerText = short.title;
+      document.getElementById('shortsChannelName').innerText = short.channel;
+      document.getElementById('shortsChannelAvatar').src = short.avatar;
+    }
+
+    function nextShort() {
+      currentShortIndex = (currentShortIndex + 1) % SHORTS_DATA.length;
+      loadShort(currentShortIndex);
+    }
+
+    // Likes & Subscriptions Logic
+    function toggleSubscribeCurrent() {
+      if (!currentVideo) return;
+      if (subscribedChannels.has(currentVideo.channelName)) {
+        subscribedChannels.delete(currentVideo.channelName);
+        showToast(`تم إلغاء الاشتراك من ${currentVideo.channelName}`);
+      } else {
+        subscribedChannels.add(currentVideo.channelName);
+        showToast(`تم الاشتراك بنجاح في ${currentVideo.channelName}! 🎉`);
+      }
+      updateSubscribeButtonUI();
+    }
+
+    function updateSubscribeButtonUI() {
+      const btn = document.getElementById('subscribeBtn');
+      if (!btn || !currentVideo) return;
+      if (subscribedChannels.has(currentVideo.channelName)) {
+        btn.innerText = 'مشترك ✔';
+        btn.className = 'mr-3 bg-[#272727] text-gray-300 font-bold px-4 py-2 rounded-full text-xs hover:bg-[#383838] transition border border-[#383838]';
+      } else {
+        btn.innerText = 'اشتراك';
+        btn.className = 'mr-3 bg-white text-black font-bold px-4 py-2 rounded-full text-xs hover:bg-gray-200 transition shadow-lg';
+      }
+    }
+
+    function toggleLikeCurrent() {
+      if (!currentVideo) return;
+      const btn = document.getElementById('likeBtn');
+      if (likedVideoIds.has(currentVideo.id)) {
+        likedVideoIds.delete(currentVideo.id);
+        btn.classList.remove('text-red-500');
+        showToast('تم إلغاء الإعجاب');
+      } else {
+        likedVideoIds.add(currentVideo.id);
+        btn.classList.add('text-red-500');
+        showToast('تمت الإضافة للفيديوهات المفضلة');
+      }
+    }
+
+    function updateLikeButtonUI() {
+      const btn = document.getElementById('likeBtn');
+      if (!btn || !currentVideo) return;
+      if (likedVideoIds.has(currentVideo.id)) {
+        btn.classList.add('text-red-500');
+      } else {
+        btn.classList.remove('text-red-500');
+      }
+    }
+
+    // Comments Logic
+    function renderComments(videoId) {
+      const list = commentsStore[videoId] || [
+        { user: 'عبدالله أحمد', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100', text: 'فيديو رائع ومحتوى قيم جداً من أفضل منصة عز تيوب!', time: 'قبل 3 ساعات' }
+      ];
+      document.getElementById('commentsCount').innerText = list.length;
+      const container = document.getElementById('commentsList');
+      container.innerHTML = list.map(c => `
+        <div class="flex gap-3 text-xs">
+          <img src="${c.avatar}" class="w-8 h-8 rounded-full object-cover shrink-0">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-white">${c.user}</span>
+              <span class="text-gray-500 text-[10px]">${c.time}</span>
+            </div>
+            <p class="text-gray-300 leading-relaxed">${c.text}</p>
+            <div class="flex items-center gap-4 text-gray-400 text-[11px] pt-1">
+              <button onclick="showToast('تم الإعجاب بالتعليق')" class="hover:text-white"><i class="fa-regular fa-thumbs-up"></i> 12</button>
+              <button class="hover:text-white"><i class="fa-regular fa-thumbs-down"></i></button>
+              <button class="hover:text-white font-bold">رد</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function postComment() {
+      const input = document.getElementById('newCommentInput');
+      const val = input.value.trim();
+      if (!val || !currentVideo) return;
+
+      if (!commentsStore[currentVideo.id]) commentsStore[currentVideo.id] = [];
+      commentsStore[currentVideo.id].unshift({
+        user: 'عز الدين (أنت)',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
+        text: val,
+        time: 'الآن'
+      });
+
+      input.value = '';
+      renderComments(currentVideo.id);
+      showToast('تم نشر تعليقك بنجاح');
+    }
+
+    function saveCurrentToWatchLater() {
+      showToast('تم حفظ الفيديو في قائمة المشاهدة لاحقاً');
+    }
+
+    /* ==========================================================================
+       6. UI UTILITIES (Modals, Toast, Sidebar Toggle)
+       ========================================================================== */
+
+    function openShareModal() {
+      document.getElementById('shareModal').classList.remove('hidden');
+      const linkInput = document.getElementById('shareLinkInput');
+      if (currentVideo) {
+        linkInput.value = `https://ezztube.com/watch?v=${currentVideo.id}`;
+      }
+    }
+
+    function closeShareModal() {
+      document.getElementById('shareModal').classList.add('hidden');
+    }
+
+    function copyShareLink() {
+      const input = document.getElementById('shareLinkInput');
+      input.select();
+      document.execCommand('copy');
+      showToast('تم نسخ رابط الفيديو إلى الحافظة!');
+      closeShareModal();
+    }
+
+    function openVoiceModal() {
+      document.getElementById('voiceModal').classList.remove('hidden');
+      setTimeout(() => {
+        closeVoiceModal();
+        document.getElementById('searchInput').value = 'جديد التقنية والذكاء الاصطناعي';
+        handleSearch(new Event('submit'));
+      }, 2500);
+    }
+
+    function closeVoiceModal() {
+      document.getElementById('voiceModal').classList.add('hidden');
+    }
+
+    function openUploadModal() {
+      document.getElementById('uploadModal').classList.remove('hidden');
+    }
+
+    function closeUploadModal() {
+      document.getElementById('uploadModal').classList.add('hidden');
+    }
+
+    function submitNewVideo() {
+      const title = document.getElementById('uploadTitle').value.trim();
+      const videoId = document.getElementById('uploadVideoId').value.trim() || 'dQw4w9WgXcQ';
+      const category = document.getElementById('uploadCategory').value;
+
+      if (!title) {
+        showToast('يرجى كتابة عنوان للفيديو');
+        return;
+      }
+
+      const newVid = {
+        id: videoId,
+        title: title,
+        channelName: 'قناتي في عز تيوب',
+        channelAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
+        views: '1 مشاهدة',
+        timeAgo: 'الآن',
+        duration: '05:00',
+        category: category,
+        description: 'فيديو حصري منشور حديثاً عبر منصة عز تيوب.',
+        subscribers: '1K'
+      };
+
+      INITIAL_VIDEOS.unshift(newVid);
+      videos.unshift(newVid);
+      closeUploadModal();
+      showToast('تم نشر الفيديو بنجاح على عز تيوب! 🚀');
+      renderVideoGrid(videos);
+      navigateTo('home');
+    }
+
+    function toggleUserMenu() {
+      document.getElementById('userMenu').classList.toggle('hidden');
+    }
+
+    function toggleNotifications() {
+      showToast('ليس لديك إشعارات جديدة غير مقروءة');
+    }
+
+    // Toggle Sidebar Width
+    document.getElementById('toggleSidebarBtn').addEventListener('click', () => {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('w-64');
+      sidebar.classList.toggle('w-0');
+      sidebar.classList.toggle('overflow-hidden');
+    });
+
+    // Toast Notification helper
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      toastMessage.innerText = msg;
+      
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
     }
   </script>
 </body>
