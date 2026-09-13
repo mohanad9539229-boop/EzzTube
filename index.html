@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>عز تيوب - EzzTube</title>
   
   <!-- Tailwind CSS -->
@@ -37,8 +37,8 @@
   <style>
     /* Custom Scrollbars and styling */
     ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
     }
     ::-webkit-scrollbar-track {
       background: #0f0f0f;
@@ -81,73 +81,86 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+
+    /* Safe viewport height for mobile browsers */
+    .mobile-vh {
+      height: 100vh;
+      height: 100dvh;
+    }
   </style>
 </head>
 <body class="bg-[#0f0f0f] text-white font-sans antialiased min-h-screen flex flex-col overflow-x-hidden selection:bg-red-600 selection:text-white">
 
   <!-- Top Navigation Header -->
-  <header class="sticky top-0 z-50 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-[#272727] px-4 h-14 flex items-center justify-between gap-4">
+  <header class="sticky top-0 z-40 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-[#272727] px-3 md:px-5 h-14 flex items-center justify-between gap-2 md:gap-4 select-none">
     
     <!-- Right side: Menu Button & Brand Logo -->
-    <div class="flex items-center gap-4 min-w-[180px]">
-      <button id="toggleSidebarBtn" class="p-2 text-gray-300 hover:text-white hover:bg-[#272727] rounded-full transition" title="القائمة">
-        <i class="fa-solid fa-bars text-lg"></i>
+    <div class="flex items-center gap-2 md:gap-4 shrink-0">
+      <button id="toggleSidebarBtn" onclick="toggleSidebar()" class="p-2 text-gray-300 hover:text-white hover:bg-[#272727] active:scale-95 rounded-full transition" title="القائمة">
+        <i class="fa-solid fa-bars text-lg md:text-xl"></i>
       </button>
+
       <div onclick="navigateTo('home')" class="flex items-center gap-2 cursor-pointer group">
-        <div class="bg-gradient-to-tr from-red-700 via-red-600 to-red-500 text-white p-1.5 px-2.5 rounded-2xl shadow-lg shadow-red-900/30 group-hover:scale-105 transition transform">
-          <i class="fa-solid fa-play text-sm"></i>
+        <div class="bg-gradient-to-tr from-red-700 via-red-600 to-red-500 text-white p-1.5 px-2 md:px-2.5 rounded-2xl shadow-lg shadow-red-900/30 group-hover:scale-105 transition transform">
+          <i class="fa-solid fa-play text-xs md:text-sm"></i>
         </div>
         <div class="flex flex-col">
-          <span class="font-extrabold text-xl tracking-tight flex items-center gap-1">
+          <span class="font-extrabold text-lg md:text-xl tracking-tight flex items-center gap-1">
             عز <span class="text-red-600">تيوب</span>
-            <span class="text-[10px] bg-red-600/20 text-red-500 font-semibold px-1.5 py-0.5 rounded border border-red-500/30">PRO</span>
+            <span class="text-[9px] md:text-[10px] bg-red-600/20 text-red-500 font-semibold px-1.5 py-0.5 rounded border border-red-500/30 hidden xs:inline-block">PRO</span>
           </span>
         </div>
       </div>
     </div>
 
-    <!-- Center: Search Bar & Voice Search -->
-    <div class="flex-1 max-w-2xl flex items-center justify-center gap-2">
+    <!-- Center: Search Bar (Desktop & Mobile Expansion) -->
+    <div id="searchContainer" class="hidden sm:flex flex-1 max-w-2xl items-center justify-center gap-2">
       <form id="searchForm" onsubmit="handleSearch(event)" class="flex w-full max-w-lg items-center">
         <div class="relative w-full">
           <input 
             type="text" 
             id="searchInput" 
-            placeholder="ابحث عن فيديوهات، قنوات، أو مواضيع جديدة..." 
-            class="w-full bg-[#121212] border border-[#303030] text-white px-4 py-2 pr-4 pl-10 rounded-r-full focus:outline-none focus:border-red-600 text-sm transition placeholder-gray-500"
+            placeholder="ابحث عن فيديوهات، قنوات، أو مواضيع..." 
+            class="w-full bg-[#121212] border border-[#303030] text-white px-4 py-2 pr-4 pl-10 rounded-r-full focus:outline-none focus:border-red-600 text-xs md:text-sm transition placeholder-gray-500"
           />
           <button type="button" onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
-            <i class="fa-solid fa-xmark"></i>
+            <i class="fa-solid fa-xmark text-sm"></i>
           </button>
         </div>
-        <button type="submit" class="bg-[#222222] border border-r-0 border-[#303030] hover:bg-[#272727] text-gray-200 px-5 py-2 rounded-l-full transition flex items-center justify-center">
-          <i class="fa-solid fa-magnifying-glass"></i>
+        <button type="submit" aria-label="بحث" class="bg-[#222222] border border-r-0 border-[#303030] hover:bg-[#272727] text-gray-200 px-4 md:px-5 py-2 rounded-l-full transition flex items-center justify-center">
+          <i class="fa-solid fa-magnifying-glass text-xs md:text-sm"></i>
         </button>
       </form>
 
-      <button onclick="openVoiceModal()" class="bg-[#222] hover:bg-[#272727] p-2.5 rounded-full text-gray-200 transition hidden sm:flex items-center justify-center" title="البحث بالصوت عبر الذكاء الاصطناعي">
+      <button onclick="openVoiceModal()" aria-label="البحث بالصوت" class="bg-[#222] hover:bg-[#272727] p-2.5 rounded-full text-gray-200 transition hidden md:flex items-center justify-center" title="البحث بالصوت">
         <i class="fa-solid fa-microphone text-sm"></i>
       </button>
     </div>
 
+    <!-- Mobile Search Toggle Button -->
+    <button onclick="toggleMobileSearch()" class="sm:hidden p-2 text-gray-300 hover:text-white hover:bg-[#272727] rounded-full transition ml-auto" title="بحث">
+      <i class="fa-solid fa-magnifying-glass text-base"></i>
+    </button>
+
     <!-- Left side: User Profile, Notifications & Actions -->
-    <div class="flex items-center gap-2 sm:gap-3">
-      <button onclick="openUploadModal()" class="bg-[#272727] hover:bg-[#383838] px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 transition border border-[#383838]">
+    <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+      <button onclick="openUploadModal()" class="bg-[#272727] hover:bg-[#383838] px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition border border-[#383838]">
         <i class="fa-solid fa-plus text-red-500 text-sm"></i>
-        <span class="hidden md:inline">إنشاء</span>
+        <span class="hidden sm:inline">إنشاء</span>
       </button>
       
-      <button onclick="toggleNotifications()" class="relative p-2.5 text-gray-300 hover:text-white hover:bg-[#272727] rounded-full transition">
-        <i class="fa-solid fa-bell"></i>
-        <span class="absolute top-1 right-1 bg-red-600 text-[10px] text-white rounded-full w-4 h-4 flex items-center justify-center font-bold">3</span>
+      <button onclick="toggleNotifications()" class="relative p-2 text-gray-300 hover:text-white hover:bg-[#272727] rounded-full transition" title="الإشعارات">
+        <i class="fa-solid fa-bell text-sm md:text-base"></i>
+        <span class="absolute top-1 right-1 bg-red-600 text-[9px] text-white rounded-full w-3.5 h-3.5 flex items-center justify-center font-bold">3</span>
       </button>
 
       <div class="relative">
-        <button onclick="toggleUserMenu()" class="flex items-center gap-2 focus:outline-none">
-          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="المستخدم" class="w-8 h-8 rounded-full border border-red-600/50 object-cover">
+        <button onclick="toggleUserMenu()" class="flex items-center gap-2 focus:outline-none p-0.5">
+          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="المستخدم" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-red-600/50 object-cover">
         </button>
+
         <!-- Dropdown Menu -->
-        <div id="userMenu" class="hidden absolute left-0 mt-2 w-56 bg-[#212121] border border-[#383838] rounded-xl shadow-2xl py-2 z-50 text-sm">
+        <div id="userMenu" class="hidden absolute left-0 mt-2 w-56 bg-[#212121] border border-[#383838] rounded-xl shadow-2xl py-2 z-50 text-xs sm:text-sm">
           <div class="px-4 py-2 border-b border-[#383838]">
             <p class="font-bold text-white">عز الدين</p>
             <p class="text-xs text-gray-400">ezz@ezztube.com</p>
@@ -162,27 +175,42 @@
     </div>
   </header>
 
+  <!-- Mobile Search Overlay Header -->
+  <div id="mobileSearchOverlay" class="hidden sm:hidden fixed top-0 left-0 right-0 z-50 bg-[#0f0f0f] p-2 border-b border-[#272727] flex items-center gap-2">
+    <button onclick="toggleMobileSearch()" class="p-2 text-gray-400 hover:text-white">
+      <i class="fa-solid fa-arrow-right"></i>
+    </button>
+    <form onsubmit="handleSearch(event)" class="flex-1 flex items-center bg-[#181818] rounded-full border border-[#303030] px-3 py-1.5">
+      <input type="text" id="mobileSearchInput" placeholder="بحث في عز تيوب..." class="w-full bg-transparent text-xs text-white focus:outline-none pr-2">
+      <button type="submit" class="text-gray-400 p-1"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </form>
+    <button onclick="openVoiceModal()" class="p-2 text-gray-300"><i class="fa-solid fa-microphone"></i></button>
+  </div>
+
   <!-- Main Container (Sidebar + Content Area) -->
   <div class="flex flex-1 overflow-hidden relative">
 
-    <!-- Collapsible Sidebar -->
-    <aside id="sidebar" class="w-64 bg-[#0f0f0f] border-l border-[#272727] flex flex-col justify-between shrink-0 transition-all duration-300 z-40 select-none">
+    <!-- Mobile Drawer Overlay Backdrop -->
+    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-xs transition-opacity duration-300 opacity-0"></div>
+
+    <!-- Responsive Sidebar Drawer -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 right-0 z-50 md:z-30 w-64 bg-[#0f0f0f] border-l border-[#272727] flex flex-col justify-between shrink-0 transition-transform md:transition-all duration-300 translate-x-full md:translate-x-0 select-none">
       <div class="p-3 space-y-1 overflow-y-auto no-scrollbar max-h-[calc(100vh-60px)]">
         
         <!-- Main Navigation Links -->
         <div class="space-y-1">
-          <button onclick="navigateTo('home')" id="nav-home" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-white font-medium text-sm transition active bg-[#272727]">
-            <i class="fa-solid fa-house text-lg text-red-500 w-6"></i>
+          <button onclick="navigateTo('home'); closeSidebarOnMobile();" id="nav-home" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-white font-medium text-sm transition active bg-[#272727]">
+            <i class="fa-solid fa-house text-base text-red-500 w-6 text-center"></i>
             <span>الرئيسية</span>
           </button>
 
-          <button onclick="navigateTo('shorts')" id="nav-shorts" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white font-medium text-sm transition">
-            <i class="fa-solid fa-bolt text-lg text-yellow-500 w-6"></i>
+          <button onclick="navigateTo('shorts'); closeSidebarOnMobile();" id="nav-shorts" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white font-medium text-sm transition">
+            <i class="fa-solid fa-bolt text-base text-yellow-500 w-6 text-center"></i>
             <span>مقاطع Shorts</span>
           </button>
 
-          <button onclick="navigateTo('subscriptions')" id="nav-subscriptions" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white font-medium text-sm transition">
-            <i class="fa-solid fa-youtube text-lg text-red-600 w-6"></i>
+          <button onclick="navigateTo('subscriptions'); closeSidebarOnMobile();" id="nav-subscriptions" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white font-medium text-sm transition">
+            <i class="fa-solid fa-youtube text-base text-red-600 w-6 text-center"></i>
             <span>الاشتراكات</span>
             <span class="mr-auto bg-red-600 text-[10px] text-white px-2 py-0.5 rounded-full font-bold">جديد</span>
           </button>
@@ -194,18 +222,18 @@
         <div class="space-y-1">
           <div class="px-3 py-1 text-xs font-bold text-gray-400">أنت</div>
           
-          <button onclick="navigateTo('history')" id="nav-history" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
-            <i class="fa-solid fa-rotate-left text-lg text-blue-400 w-6"></i>
+          <button onclick="navigateTo('history'); closeSidebarOnMobile();" id="nav-history" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-rotate-left text-base text-blue-400 w-6 text-center"></i>
             <span>السجل</span>
           </button>
 
-          <button onclick="navigateTo('liked')" id="nav-liked" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
-            <i class="fa-solid fa-thumbs-up text-lg text-emerald-400 w-6"></i>
+          <button onclick="navigateTo('liked'); closeSidebarOnMobile();" id="nav-liked" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-thumbs-up text-base text-emerald-400 w-6 text-center"></i>
             <span>الفيديوهات الأعجبتني</span>
           </button>
 
-          <button onclick="showToast('قائمة المشاهدة لاحقاً فارغة')" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
-            <i class="fa-solid fa-clock text-lg text-purple-400 w-6"></i>
+          <button onclick="showToast('قائمة المشاهدة لاحقاً فارغة'); closeSidebarOnMobile();" class="sidebar-item w-full flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-clock text-base text-purple-400 w-6 text-center"></i>
             <span>مشاهدة لاحقاً</span>
           </button>
         </div>
@@ -216,28 +244,28 @@
         <div class="space-y-1">
           <div class="px-3 py-1 text-xs font-bold text-gray-400">استكشف التصنيفات</div>
           
-          <button onclick="filterByCategory('ألعاب')" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
-            <i class="fa-solid fa-gamepad text-gray-400 w-6"></i>
+          <button onclick="filterByCategory('ألعاب'); closeSidebarOnMobile();" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-gamepad text-gray-400 w-6 text-center"></i>
             <span>الألعاب والقيمنق</span>
           </button>
 
-          <button onclick="filterByCategory('موسيقى')" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
-            <i class="fa-solid fa-music text-gray-400 w-6"></i>
+          <button onclick="filterByCategory('موسيقى'); closeSidebarOnMobile();" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-music text-gray-400 w-6 text-center"></i>
             <span>الموسيقى والأغاني</span>
           </button>
 
-          <button onclick="filterByCategory('تقنية')" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
-            <i class="fa-solid fa-microchip text-gray-400 w-6"></i>
+          <button onclick="filterByCategory('تقنية'); closeSidebarOnMobile();" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-microchip text-gray-400 w-6 text-center"></i>
             <span>التقنية والذكاء الاصطناعي</span>
           </button>
 
-          <button onclick="filterByCategory('بودكاست')" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
-            <i class="fa-solid fa-podcast text-gray-400 w-6"></i>
+          <button onclick="filterByCategory('بودكاست'); closeSidebarOnMobile();" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-podcast text-gray-400 w-6 text-center"></i>
             <span>البودكاست واللقاءات</span>
           </button>
 
-          <button onclick="filterByCategory('تعليم')" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
-            <i class="fa-solid fa-graduation-cap text-gray-400 w-6"></i>
+          <button onclick="filterByCategory('تعليم'); closeSidebarOnMobile();" class="w-full flex items-center gap-4 px-3 py-2 rounded-xl hover:bg-[#272727] text-gray-300 hover:text-white text-sm transition">
+            <i class="fa-solid fa-graduation-cap text-gray-400 w-6 text-center"></i>
             <span>التعليم والبرمجة</span>
           </button>
         </div>
@@ -251,39 +279,39 @@
           </div>
         </div>
 
-        <div class="pt-6 pb-2 px-3 text-[11px] text-gray-500 leading-relaxed border-t border-[#272727] mt-4">
+        <div class="pt-6 pb-20 md:pb-2 px-3 text-[11px] text-gray-500 leading-relaxed border-t border-[#272727] mt-4">
           <p>© 2026 منصة عز تيوب - EzzTube</p>
-          <p>جميع حقوق الفيديوهات والتضمين محفوظة لأصحابها على يوتيوب.</p>
+          <p>جميع حقوق الفيديوهات والتضمين محفوظة لأصحابها.</p>
         </div>
 
       </div>
     </aside>
 
     <!-- Content Area -->
-    <main id="mainContent" class="flex-1 overflow-y-auto p-4 md:p-6 bg-[#0f0f0f] flex flex-col">
+    <main id="mainContent" class="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 bg-[#0f0f0f] flex flex-col pb-20 md:pb-6">
       
       <!-- Category Tags Chips Bar (Home View Only) -->
-      <div id="categoryChipsBar" class="flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar mb-2">
+      <div id="categoryChipsBar" class="flex items-center gap-2 overflow-x-auto pb-3 no-scrollbar mb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
         <!-- Generated by JS -->
       </div>
 
       <!-- VIEW 1: Video Grid Feed (Home / Search / Subscriptions / History) -->
       <div id="feedView" class="w-full">
-        <div id="searchBanner" class="hidden mb-6 bg-gradient-to-r from-red-900/40 via-red-800/20 to-transparent p-4 rounded-2xl border border-red-500/30 flex items-center justify-between">
+        <div id="searchBanner" class="hidden mb-4 sm:mb-6 bg-gradient-to-r from-red-900/40 via-red-800/20 to-transparent p-3.5 sm:p-4 rounded-2xl border border-red-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <h2 class="text-sm sm:text-lg font-bold text-white flex items-center gap-2">
               <i class="fa-solid fa-sparkles text-yellow-400"></i>
-              نتائج البحث المباشرة المفتوحة: <span id="searchQueryText" class="text-red-400 underline"></span>
+              نتائج البحث المباشرة: <span id="searchQueryText" class="text-red-400 underline"></span>
             </h2>
-            <p class="text-xs text-gray-300 mt-1">تتم جلب وتحليل النتائج مباشرة باستخدام ذكاء عز تيوب الاصطناعي</p>
+            <p class="text-[11px] sm:text-xs text-gray-300 mt-0.5">تم تحليل وتصفية النتائج الذكية لمنصة عز تيوب</p>
           </div>
-          <button onclick="resetFeed()" class="bg-[#272727] hover:bg-[#383838] px-3 py-1.5 rounded-xl text-xs text-gray-200 transition">
+          <button onclick="resetFeed()" class="bg-[#272727] hover:bg-[#383838] px-3 py-1.5 rounded-xl text-xs text-gray-200 transition self-start sm:self-auto">
             إلغاء البحث
           </button>
         </div>
 
-        <!-- Video Cards Grid -->
-        <div id="videoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-7">
+        <!-- Video Cards Grid (Highly Responsive across screens) -->
+        <div id="videoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-4 gap-y-6 sm:gap-y-8">
           <!-- Video Cards render here -->
         </div>
       </div>
@@ -294,7 +322,7 @@
         <!-- Main Player & Info Column -->
         <div class="flex-1 flex flex-col">
           <!-- Video Frame Container -->
-          <div class="w-full bg-black rounded-2xl overflow-hidden shadow-2xl border border-[#272727] aspect-video-container">
+          <div class="w-full bg-black rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-[#272727] aspect-video-container">
             <iframe 
               id="mainVideoPlayer" 
               src="" 
@@ -305,79 +333,81 @@
           </div>
 
           <!-- Video Details Section -->
-          <div class="mt-4">
-            <h1 id="watchVideoTitle" class="text-lg md:text-xl font-bold text-white leading-snug">
+          <div class="mt-3 sm:mt-4">
+            <h1 id="watchVideoTitle" class="text-base sm:text-lg md:text-xl font-bold text-white leading-snug">
               عنوان الفيديو هنا
             </h1>
 
             <!-- Actions Bar & Channel Info -->
-            <div class="mt-3 flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#272727]">
+            <div class="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#272727]">
               <!-- Channel Info -->
-              <div class="flex items-center gap-3">
-                <img id="watchChannelAvatar" src="" alt="شعار القناة" class="w-11 h-11 rounded-full object-cover border border-red-600/40">
-                <div>
-                  <h3 id="watchChannelName" class="font-bold text-white text-base flex items-center gap-1.5">
-                    اسم القناة <i class="fa-solid fa-circle-check text-xs text-gray-400"></i>
-                  </h3>
-                  <p id="watchSubscribersCount" class="text-xs text-gray-400">1.2M مشترك</p>
+              <div class="flex items-center justify-between sm:justify-start gap-3">
+                <div class="flex items-center gap-2.5">
+                  <img id="watchChannelAvatar" src="" alt="شعار القناة" class="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover border border-red-600/40">
+                  <div>
+                    <h3 id="watchChannelName" class="font-bold text-white text-sm sm:text-base flex items-center gap-1.5">
+                      اسم القناة <i class="fa-solid fa-circle-check text-xs text-gray-400"></i>
+                    </h3>
+                    <p id="watchSubscribersCount" class="text-[11px] sm:text-xs text-gray-400">1.2M مشترك</p>
+                  </div>
                 </div>
-                <button id="subscribeBtn" onclick="toggleSubscribeCurrent()" class="mr-3 bg-white text-black font-bold px-4 py-2 rounded-full text-xs hover:bg-gray-200 transition shadow-lg">
+                <button id="subscribeBtn" onclick="toggleSubscribeCurrent()" class="mr-auto sm:mr-3 bg-white text-black font-bold px-4 py-1.5 sm:py-2 rounded-full text-xs hover:bg-gray-200 transition shadow-lg shrink-0">
                   اشتراك
                 </button>
               </div>
 
               <!-- Action Buttons -->
-              <div class="flex items-center gap-2 flex-wrap text-sm">
-                <div class="flex items-center bg-[#272727] rounded-full overflow-hidden border border-[#383838]">
-                  <button id="likeBtn" onclick="toggleLikeCurrent()" class="flex items-center gap-2 px-4 py-2 hover:bg-[#383838] transition text-gray-200">
-                    <i class="fa-regular fa-thumbs-up text-base"></i>
+              <div class="flex items-center gap-2 overflow-x-auto no-scrollbar text-xs sm:text-sm pt-1 sm:pt-0">
+                <div class="flex items-center bg-[#272727] rounded-full overflow-hidden border border-[#383838] shrink-0">
+                  <button id="likeBtn" onclick="toggleLikeCurrent()" class="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 hover:bg-[#383838] transition text-gray-200">
+                    <i class="fa-regular fa-thumbs-up text-sm sm:text-base"></i>
                     <span id="watchLikesCount">12K</span>
                   </button>
-                  <div class="w-[1px] h-5 bg-[#383838]"></div>
-                  <button onclick="showToast('تم تسجيل عدم الإعجاب')" class="px-3 py-2 hover:bg-[#383838] transition text-gray-200">
-                    <i class="fa-regular fa-thumbs-down text-base"></i>
+                  <div class="w-[1px] h-4 sm:h-5 bg-[#383838]"></div>
+                  <button onclick="showToast('تم تسجيل عدم الإعجاب')" class="px-2.5 sm:px-3 py-1.5 sm:py-2 hover:bg-[#383838] transition text-gray-200">
+                    <i class="fa-regular fa-thumbs-down text-sm sm:text-base"></i>
                   </button>
                 </div>
 
-                <button onclick="openShareModal()" class="flex items-center gap-2 bg-[#272727] hover:bg-[#383838] px-4 py-2 rounded-full transition text-gray-200 border border-[#383838]">
-                  <i class="fa-solid fa-share"></i>
+                <button onclick="openShareModal()" class="flex items-center gap-1.5 sm:gap-2 bg-[#272727] hover:bg-[#383838] px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full transition text-gray-200 border border-[#383838] shrink-0">
+                  <i class="fa-solid fa-share text-xs sm:text-sm"></i>
                   <span>مشاركة</span>
                 </button>
 
-                <button onclick="saveCurrentToWatchLater()" class="flex items-center gap-2 bg-[#272727] hover:bg-[#383838] px-4 py-2 rounded-full transition text-gray-200 border border-[#383838]">
-                  <i class="fa-regular fa-bookmark"></i>
+                <button onclick="saveCurrentToWatchLater()" class="flex items-center gap-1.5 sm:gap-2 bg-[#272727] hover:bg-[#383838] px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full transition text-gray-200 border border-[#383838] shrink-0">
+                  <i class="fa-regular fa-bookmark text-xs sm:text-sm"></i>
                   <span>حفظ</span>
                 </button>
               </div>
             </div>
 
             <!-- Expandable Video Description Box -->
-            <div class="mt-4 bg-[#212121] p-4 rounded-2xl text-sm border border-[#2e2e2e]">
-              <div class="flex items-center gap-3 text-xs text-gray-300 font-semibold mb-2">
+            <div class="mt-4 bg-[#212121] p-3.5 sm:p-4 rounded-2xl text-xs sm:text-sm border border-[#2e2e2e]">
+              <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-gray-300 font-semibold mb-2">
                 <span id="watchViewsCount">250,000 مشاهدة</span>
                 <span>•</span>
                 <span id="watchTimeAgo">قبل يومين</span>
-                <span id="watchCategoryTag" class="bg-red-600/20 text-red-400 px-2.5 py-0.5 rounded-full border border-red-500/30">تقنية</span>
+                <span id="watchCategoryTag" class="bg-red-600/20 text-red-400 px-2 py-0.5 rounded-full border border-red-500/30">تقنية</span>
               </div>
-              <p id="watchDescriptionText" class="text-gray-300 leading-relaxed whitespace-pre-line">
+              <p id="watchDescriptionText" class="text-gray-300 leading-relaxed whitespace-pre-line text-xs sm:text-sm">
                 وصف الفيديو التفصيلي هنا...
               </p>
             </div>
 
             <!-- Comments Section -->
             <div class="mt-6">
-              <div class="flex items-center gap-4 mb-4">
-                <h3 class="font-bold text-lg text-white"><span id="commentsCount">124</span> تعليقًا</h3>
+              <div class="flex items-center justify-between sm:justify-start gap-4 mb-4">
+                <h3 class="font-bold text-base sm:text-lg text-white"><span id="commentsCount">124</span> تعليقًا</h3>
                 <button class="text-xs text-gray-400 hover:text-white flex items-center gap-1">
                   <i class="fa-solid fa-arrow-down-short-wide"></i> ترتيب حسب
                 </button>
               </div>
 
               <!-- Add Comment Input -->
-              <div class="flex gap-3 mb-6">
-                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="المستخدم" class="w-10 h-10 rounded-full object-cover">
+              <div class="flex gap-2.5 sm:gap-3 mb-6">
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="المستخدم" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shrink-0">
                 <div class="flex-1">
-                  <input type="text" id="newCommentInput" placeholder="إضافة تعليق علني في عز تيوب..." class="w-full bg-transparent border-b border-[#383838] focus:border-red-600 text-sm text-white py-2 focus:outline-none transition">
+                  <input type="text" id="newCommentInput" placeholder="إضافة تعليق علني..." class="w-full bg-transparent border-b border-[#383838] focus:border-red-600 text-xs sm:text-sm text-white py-2 focus:outline-none transition">
                   <div class="flex justify-end gap-2 mt-2">
                     <button onclick="document.getElementById('newCommentInput').value=''" class="px-3 py-1.5 text-xs text-gray-400 hover:text-white transition">إلغاء</button>
                     <button onclick="postComment()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-1.5 rounded-full text-xs transition">تعليق</button>
@@ -397,7 +427,7 @@
         <!-- Sidebar Up Next Videos Column -->
         <div class="w-full lg:w-80 shrink-0 space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="font-bold text-base text-white">التالي في عز تيوب</h3>
+            <h3 class="font-bold text-sm sm:text-base text-white">التالي في عز تيوب</h3>
             <label class="flex items-center gap-2 cursor-pointer text-xs text-gray-400">
               <span>تشغيل تلقائي</span>
               <input type="checkbox" checked class="accent-red-600">
@@ -411,21 +441,21 @@
 
       </div>
 
-      <!-- VIEW 3: Shorts Player View -->
-      <div id="shortsView" class="hidden w-full flex-1 flex items-center justify-center py-4">
-        <div class="relative w-full max-w-sm h-[75vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-[#303030] flex flex-col justify-between">
+      <!-- VIEW 3: Shorts Player View (Touch Swipe Friendly) -->
+      <div id="shortsView" class="hidden w-full flex-1 flex items-center justify-center py-2 sm:py-4">
+        <div class="relative w-full max-w-sm h-[70vh] sm:h-[75vh] bg-black rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-[#303030] flex flex-col justify-between">
           
           <iframe id="shortsIframe" src="" class="absolute inset-0 w-full h-full border-0 pointer-events-auto" allow="autoplay; encrypted-media" allowfullscreen></iframe>
           
           <!-- Shorts Controls Overlay -->
-          <div class="relative z-10 p-4 bg-gradient-to-t from-black/80 via-transparent to-black/40 flex flex-col justify-between h-full pointer-events-none">
+          <div class="relative z-10 p-3 sm:p-4 bg-gradient-to-t from-black/90 via-transparent to-black/40 flex flex-col justify-between h-full pointer-events-none">
             <!-- Top Header -->
             <div class="flex justify-between items-center text-white pointer-events-auto">
               <span class="bg-red-600 font-bold px-2.5 py-1 rounded-full text-xs flex items-center gap-1 shadow">
                 <i class="fa-solid fa-bolt"></i> Shorts
               </span>
               <button onclick="nextShort()" class="bg-black/50 p-2 rounded-full text-white hover:bg-black transition">
-                <i class="fa-solid fa-arrow-down"></i>
+                <i class="fa-solid fa-arrow-down text-sm"></i>
               </button>
             </div>
 
@@ -433,34 +463,34 @@
             <div class="flex items-end justify-between pointer-events-auto">
               <div class="text-white space-y-2 max-w-[75%]">
                 <div class="flex items-center gap-2">
-                  <img id="shortsChannelAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" class="w-9 h-9 rounded-full border border-white">
-                  <span id="shortsChannelName" class="font-bold text-sm">@ChannelName</span>
-                  <button class="bg-red-600 text-white text-xs px-2.5 py-1 rounded-full font-bold">اشتراك</button>
+                  <img id="shortsChannelAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" class="w-8 h-8 rounded-full border border-white">
+                  <span id="shortsChannelName" class="font-bold text-xs sm:text-sm truncate">@ChannelName</span>
+                  <button class="bg-red-600 text-white text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-bold">اشتراك</button>
                 </div>
                 <p id="shortsTitle" class="text-xs font-medium line-clamp-2">عنوان مقطع شورتس القصير هنا مع الهاشتاقات...</p>
               </div>
 
               <!-- Sidebar Actions (Like, Comment, Share) -->
-              <div class="flex flex-col gap-4 items-center">
+              <div class="flex flex-col gap-3 sm:gap-4 items-center">
                 <button onclick="showToast('تم الإعجاب بالشورت')" class="flex flex-col items-center text-white">
-                  <div class="w-10 h-10 bg-black/50 hover:bg-red-600/80 rounded-full flex items-center justify-center transition">
-                    <i class="fa-solid fa-heart text-lg"></i>
+                  <div class="w-9 h-9 sm:w-10 sm:h-10 bg-black/50 hover:bg-red-600/80 rounded-full flex items-center justify-center transition">
+                    <i class="fa-solid fa-heart text-base sm:text-lg"></i>
                   </div>
-                  <span class="text-[11px] mt-1 font-bold">45K</span>
+                  <span class="text-[10px] sm:text-[11px] mt-1 font-bold">45K</span>
                 </button>
 
                 <button onclick="showToast('فتح تعليقات الشورت')" class="flex flex-col items-center text-white">
-                  <div class="w-10 h-10 bg-black/50 hover:bg-black rounded-full flex items-center justify-center transition">
-                    <i class="fa-solid fa-comment text-lg"></i>
+                  <div class="w-9 h-9 sm:w-10 sm:h-10 bg-black/50 hover:bg-black rounded-full flex items-center justify-center transition">
+                    <i class="fa-solid fa-comment text-base sm:text-lg"></i>
                   </div>
-                  <span class="text-[11px] mt-1 font-bold">1.2K</span>
+                  <span class="text-[10px] sm:text-[11px] mt-1 font-bold">1.2K</span>
                 </button>
 
                 <button onclick="openShareModal()" class="flex flex-col items-center text-white">
-                  <div class="w-10 h-10 bg-black/50 hover:bg-black rounded-full flex items-center justify-center transition">
-                    <i class="fa-solid fa-share text-lg"></i>
+                  <div class="w-9 h-9 sm:w-10 sm:h-10 bg-black/50 hover:bg-black rounded-full flex items-center justify-center transition">
+                    <i class="fa-solid fa-share text-base sm:text-lg"></i>
                   </div>
-                  <span class="text-[11px] mt-1 font-bold">مشاركة</span>
+                  <span class="text-[10px] sm:text-[11px] mt-1 font-bold">مشاركة</span>
                 </button>
               </div>
             </div>
@@ -472,19 +502,45 @@
     </main>
   </div>
 
+  <!-- Mobile Native Bottom Navigation Bar (Visible only on small screens) -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0f0f0f]/95 backdrop-blur-lg border-t border-[#272727] flex items-center justify-around py-1.5 px-2 select-none">
+    <button onclick="navigateTo('home')" id="mobile-nav-home" class="mobile-nav-item flex flex-col items-center text-red-500 p-1">
+      <i class="fa-solid fa-house text-lg"></i>
+      <span class="text-[10px] font-semibold mt-0.5">الرئيسية</span>
+    </button>
+    <button onclick="navigateTo('shorts')" id="mobile-nav-shorts" class="mobile-nav-item flex flex-col items-center text-gray-400 p-1">
+      <i class="fa-solid fa-bolt text-lg"></i>
+      <span class="text-[10px] font-semibold mt-0.5">Shorts</span>
+    </button>
+    <button onclick="openUploadModal()" class="flex flex-col items-center text-gray-300 p-1">
+      <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white shadow-lg">
+        <i class="fa-solid fa-plus text-sm"></i>
+      </div>
+      <span class="text-[10px] font-semibold mt-0.5">إنشاء</span>
+    </button>
+    <button onclick="navigateTo('subscriptions')" id="mobile-nav-subscriptions" class="mobile-nav-item flex flex-col items-center text-gray-400 p-1">
+      <i class="fa-solid fa-youtube text-lg"></i>
+      <span class="text-[10px] font-semibold mt-0.5">الاشتراكات</span>
+    </button>
+    <button onclick="navigateTo('history')" id="mobile-nav-history" class="mobile-nav-item flex flex-col items-center text-gray-400 p-1">
+      <i class="fa-solid fa-user text-lg"></i>
+      <span class="text-[10px] font-semibold mt-0.5">المكتبة</span>
+    </button>
+  </nav>
+
   <!-- Modals & Overlays -->
 
   <!-- Share Modal -->
   <div id="shareModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-[#212121] border border-[#383838] w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+    <div class="bg-[#212121] border border-[#383838] w-full max-w-md rounded-2xl p-5 sm:p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-[#383838] pb-3">
-        <h3 class="font-bold text-lg text-white">مشاركة الفيديو</h3>
+        <h3 class="font-bold text-base sm:text-lg text-white">مشاركة الفيديو</h3>
         <button onclick="closeShareModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
       <p class="text-xs text-gray-300">انسخ الرابط أدناه أو شاركه عبر وسائل التواصل الاجتماعي:</p>
       <div class="flex items-center bg-[#121212] border border-[#383838] rounded-xl p-2">
         <input id="shareLinkInput" readonly type="text" value="https://ezztube.com/watch?v=demo" class="bg-transparent text-xs text-gray-200 w-full px-2 focus:outline-none">
-        <button onclick="copyShareLink()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-1.5 rounded-lg transition shrink-0">
+        <button onclick="copyShareLink()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg transition shrink-0">
           نسخ الرابط
         </button>
       </div>
@@ -493,14 +549,14 @@
 
   <!-- Voice AI Search Modal -->
   <div id="voiceModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-[#212121] border border-[#383838] w-full max-w-md rounded-3xl p-8 shadow-2xl flex flex-col items-center text-center space-y-6">
+    <div class="bg-[#212121] border border-[#383838] w-full max-w-sm rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col items-center text-center space-y-6">
       <div class="relative">
         <div class="w-20 h-20 bg-red-600/20 border-2 border-red-600 rounded-full flex items-center justify-center text-red-500 text-3xl animate-pulse">
           <i class="fa-solid fa-microphone"></i>
         </div>
       </div>
       <div>
-        <h3 class="font-extrabold text-xl text-white">البحث الصوتي الذكي</h3>
+        <h3 class="font-extrabold text-lg sm:text-xl text-white">البحث الصوتي الذكي</h3>
         <p class="text-xs text-gray-400 mt-2">تحدث الآن... يبحث عز تيوب في جميع الفيديوهات والقنوات</p>
       </div>
       <div class="flex gap-3 w-full">
@@ -511,9 +567,9 @@
 
   <!-- Upload / Create Modal -->
   <div id="uploadModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-[#212121] border border-[#383838] w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4">
+    <div class="bg-[#212121] border border-[#383838] w-full max-w-lg rounded-2xl p-5 sm:p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-[#383838] pb-3">
-        <h3 class="font-bold text-lg text-white flex items-center gap-2">
+        <h3 class="font-bold text-base sm:text-lg text-white flex items-center gap-2">
           <i class="fa-solid fa-cloud-arrow-up text-red-500"></i> نشر فيديو جديد في عز تيوب
         </h3>
         <button onclick="closeUploadModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -546,7 +602,7 @@
   </div>
 
   <!-- Toast Notification Bar -->
-  <div id="toast" class="fixed bottom-5 left-5 z-50 bg-red-600 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-3 transition transform translate-y-20 opacity-0">
+  <div id="toast" class="fixed bottom-16 md:bottom-5 left-1/2 md:left-5 -translate-x-1/2 md:translate-x-0 z-50 bg-red-600 text-white px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2.5 transition transform translate-y-20 opacity-0 whitespace-nowrap">
     <i class="fa-solid fa-circle-info text-sm"></i>
     <span id="toastMessage">تنبيه من عز تيوب</span>
   </div>
@@ -699,7 +755,7 @@
       const container = document.getElementById('categoryChipsBar');
       container.innerHTML = CATEGORIES.map(cat => `
         <button onclick="filterByCategory('${cat}')" 
-          class="px-4 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap border shrink-0 ${
+          class="px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap border shrink-0 ${
             activeCategory === cat 
             ? 'bg-white text-black border-white shadow-md scale-105' 
             : 'bg-[#272727] text-gray-300 border-[#383838] hover:bg-[#383838] hover:text-white'
@@ -713,7 +769,7 @@
     function renderSubscribedChannels() {
       const container = document.getElementById('subscribedChannelsList');
       container.innerHTML = INITIAL_CHANNELS.map(ch => `
-        <div onclick="searchChannel('${ch.name}')" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#272727] cursor-pointer text-xs text-gray-300 hover:text-white transition">
+        <div onclick="searchChannel('${ch.name}'); closeSidebarOnMobile();" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-[#272727] cursor-pointer text-xs text-gray-300 hover:text-white transition">
           <img src="${ch.avatar}" class="w-6 h-6 rounded-full object-cover border border-red-600/40">
           <span class="truncate flex-1">${ch.name}</span>
           <span class="w-2 h-2 rounded-full bg-red-600"></span>
@@ -726,44 +782,44 @@
       const container = document.getElementById('videoGrid');
       if (videoList.length === 0) {
         container.innerHTML = `
-          <div class="col-span-full py-16 text-center text-gray-400 space-y-3">
-            <i class="fa-solid fa-film text-4xl text-gray-600"></i>
-            <p class="font-bold text-base">لم نجد فيديوهات تطابق بحثك</p>
-            <button onclick="resetFeed()" class="bg-red-600 text-white font-bold px-4 py-2 rounded-xl text-xs">عرض جميع فيديوهات عز تيوب</button>
+          <div class="col-span-full py-12 sm:py-16 text-center text-gray-400 space-y-3">
+            <i class="fa-solid fa-film text-3xl sm:text-4xl text-gray-600"></i>
+            <p class="font-bold text-sm sm:text-base">لم نجد فيديوهات تطابق بحثك</p>
+            <button onclick="resetFeed()" class="bg-red-600 text-white font-bold px-4 py-2 rounded-xl text-xs">عرض جميع الفيديوهات</button>
           </div>
         `;
         return;
       }
 
       container.innerHTML = videoList.map(v => `
-        <div class="video-card group cursor-pointer flex flex-col space-y-3" onclick="watchVideo('${v.id}')">
+        <div class="video-card group cursor-pointer flex flex-col space-y-2.5 sm:space-y-3" onclick="watchVideo('${v.id}')">
           <!-- Thumbnail Container -->
-          <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-[#1f1f1f] border border-[#2a2a2a] group-hover:border-red-600/50 transition">
+          <div class="relative w-full aspect-video rounded-xl sm:rounded-2xl overflow-hidden bg-[#1f1f1f] border border-[#2a2a2a] group-hover:border-red-600/50 transition">
             <img src="https://img.youtube.com/vi/${v.id}/hqdefault.jpg" 
                  onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500'" 
                  alt="${v.title}" 
                  class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-            <span class="absolute bottom-2 left-2 bg-black/80 text-white font-mono font-bold text-[11px] px-2 py-0.5 rounded-md backdrop-blur-sm">
+            <span class="absolute bottom-2 left-2 bg-black/80 text-white font-mono font-bold text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded-md backdrop-blur-sm">
               ${v.duration}
             </span>
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-              <div class="w-12 h-12 bg-red-600/90 text-white rounded-full flex items-center justify-center text-lg shadow-xl scale-90 group-hover:scale-100 transition">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-red-600/90 text-white rounded-full flex items-center justify-center text-base sm:text-lg shadow-xl scale-90 group-hover:scale-100 transition">
                 <i class="fa-solid fa-play"></i>
               </div>
             </div>
           </div>
 
           <!-- Video Details -->
-          <div class="flex gap-3 px-1">
-            <img src="${v.channelAvatar}" alt="${v.channelName}" class="w-9 h-9 rounded-full object-cover border border-red-600/30 shrink-0">
+          <div class="flex gap-2.5 sm:gap-3 px-1">
+            <img src="${v.channelAvatar}" alt="${v.channelName}" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover border border-red-600/30 shrink-0">
             <div class="flex-1 min-w-0">
-              <h3 class="font-bold text-sm text-white line-clamp-2 leading-snug group-hover:text-red-400 transition">
+              <h3 class="font-bold text-xs sm:text-sm text-white line-clamp-2 leading-snug group-hover:text-red-400 transition">
                 ${v.title}
               </h3>
-              <p class="text-xs text-gray-400 mt-1 flex items-center gap-1 font-medium">
+              <p class="text-[11px] sm:text-xs text-gray-400 mt-1 flex items-center gap-1 font-medium truncate">
                 ${v.channelName} <i class="fa-solid fa-circle-check text-[10px] text-gray-500"></i>
               </p>
-              <div class="text-[11px] text-gray-500 flex items-center gap-2 mt-0.5">
+              <div class="text-[10px] sm:text-[11px] text-gray-500 flex items-center gap-2 mt-0.5">
                 <span>${v.views}</span>
                 <span>•</span>
                 <span>${v.timeAgo}</span>
@@ -784,27 +840,38 @@
       document.getElementById('shortsView').classList.add('hidden');
       document.getElementById('categoryChipsBar').classList.add('hidden');
 
-      // Update sidebar styling active states
+      // Update active sidebar & mobile navigation styles
       document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('bg-[#272727]', 'text-white'));
+      document.querySelectorAll('.mobile-nav-item').forEach(el => {
+        el.classList.remove('text-red-500');
+        el.classList.add('text-gray-400');
+      });
 
       if (viewName === 'home') {
         document.getElementById('feedView').classList.remove('hidden');
         document.getElementById('categoryChipsBar').classList.remove('hidden');
         document.getElementById('nav-home').classList.add('bg-[#272727]', 'text-white');
-        // Stop watch player
+        document.getElementById('mobile-nav-home').classList.add('text-red-500');
+        document.getElementById('mobile-nav-home').classList.remove('text-gray-400');
         document.getElementById('mainVideoPlayer').src = '';
       } else if (viewName === 'shorts') {
         document.getElementById('shortsView').classList.remove('hidden');
         document.getElementById('nav-shorts').classList.add('bg-[#272727]', 'text-white');
+        document.getElementById('mobile-nav-shorts').classList.add('text-red-500');
+        document.getElementById('mobile-nav-shorts').classList.remove('text-gray-400');
         document.getElementById('mainVideoPlayer').src = '';
         loadShort(0);
       } else if (viewName === 'subscriptions') {
         document.getElementById('feedView').classList.remove('hidden');
         document.getElementById('nav-subscriptions').classList.add('bg-[#272727]', 'text-white');
+        document.getElementById('mobile-nav-subscriptions').classList.add('text-red-500');
+        document.getElementById('mobile-nav-subscriptions').classList.remove('text-gray-400');
         renderVideoGrid(videos.filter(v => subscribedChannels.has(v.channelName)));
       } else if (viewName === 'history') {
         document.getElementById('feedView').classList.remove('hidden');
         document.getElementById('nav-history').classList.add('bg-[#272727]', 'text-white');
+        document.getElementById('mobile-nav-history').classList.add('text-red-500');
+        document.getElementById('mobile-nav-history').classList.remove('text-gray-400');
         renderVideoGrid(historyVideos);
       } else if (viewName === 'liked') {
         document.getElementById('feedView').classList.remove('hidden');
@@ -857,8 +924,8 @@
       const recList = videos.filter(v => v.id !== currentId);
       const container = document.getElementById('recommendedVideosList');
       container.innerHTML = recList.map(v => `
-        <div onclick="watchVideo('${v.id}')" class="flex gap-3 group cursor-pointer hover:bg-[#212121] p-1.5 rounded-xl transition">
-          <div class="relative w-36 aspect-video rounded-xl overflow-hidden bg-black shrink-0 border border-[#2d2d2d]">
+        <div onclick="watchVideo('${v.id}')" class="flex gap-2.5 sm:gap-3 group cursor-pointer hover:bg-[#212121] p-1.5 rounded-xl transition">
+          <div class="relative w-32 sm:w-36 aspect-video rounded-lg sm:rounded-xl overflow-hidden bg-black shrink-0 border border-[#2d2d2d]">
             <img src="https://img.youtube.com/vi/${v.id}/hqdefault.jpg" class="w-full h-full object-cover group-hover:scale-105 transition">
             <span class="absolute bottom-1 left-1 bg-black/80 text-white text-[9px] font-mono font-bold px-1 rounded">
               ${v.duration}
@@ -868,7 +935,7 @@
             <h4 class="font-bold text-xs text-white line-clamp-2 leading-snug group-hover:text-red-400 transition">
               ${v.title}
             </h4>
-            <p class="text-[11px] text-gray-400 mt-1 font-medium">${v.channelName}</p>
+            <p class="text-[11px] text-gray-400 mt-1 font-medium truncate">${v.channelName}</p>
             <p class="text-[10px] text-gray-500">${v.views}</p>
           </div>
         </div>
@@ -905,27 +972,30 @@
 
     async function handleSearch(event) {
       event.preventDefault();
-      const query = document.getElementById('searchInput').value.trim();
+      const mobileInput = document.getElementById('mobileSearchInput');
+      const desktopInput = document.getElementById('searchInput');
+      const query = (mobileInput?.value || desktopInput?.value || '').trim();
       if (!query) return;
 
       document.getElementById('clearSearchBtn').classList.remove('hidden');
       document.getElementById('searchBanner').classList.remove('hidden');
       document.getElementById('searchQueryText').innerText = query;
 
-      showToast('جاري البحث عبر عز تيوب الذكي...');
+      // Close mobile search overlay if active
+      document.getElementById('mobileSearchOverlay').classList.add('hidden');
 
-      // Attempt AI search or dynamic fallback
+      showToast('جاري البحث في عز تيوب...');
+
       try {
         const aiResults = await searchWithGeminiAI(query);
         if (aiResults && aiResults.length > 0) {
           videos = [...aiResults, ...INITIAL_VIDEOS];
           renderVideoGrid(aiResults);
-          showToast(`تم العثور على ${aiResults.length} فيديو جديد!`);
+          showToast(`تم العثور على ${aiResults.length} فيديو!`);
         } else {
           fallbackLocalSearch(query);
         }
       } catch (err) {
-        console.warn('AI Search Fallback:', err);
         fallbackLocalSearch(query);
       }
 
@@ -994,8 +1064,47 @@
     }
 
     /* ==========================================================================
-       5. INTERACTIVE FEATURES (Shorts, Subscriptions, Comments, Modals)
+       5. INTERACTIVE FEATURES & RESPONSIVE UI CONTROLS
        ========================================================================== */
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      
+      if (window.innerWidth < 768) {
+        // Mobile Drawer Toggle
+        if (sidebar.classList.contains('translate-x-full')) {
+          sidebar.classList.remove('translate-x-full');
+          backdrop.classList.remove('hidden');
+          setTimeout(() => backdrop.classList.add('opacity-100'), 10);
+        } else {
+          closeSidebarOnMobile();
+        }
+      } else {
+        // Desktop Toggle
+        sidebar.classList.toggle('w-64');
+        sidebar.classList.toggle('w-0');
+        sidebar.classList.toggle('overflow-hidden');
+      }
+    }
+
+    function closeSidebarOnMobile() {
+      if (window.innerWidth < 768) {
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebarBackdrop');
+        sidebar.classList.add('translate-x-full');
+        backdrop.classList.remove('opacity-100');
+        setTimeout(() => backdrop.classList.add('hidden'), 300);
+      }
+    }
+
+    function toggleMobileSearch() {
+      const overlay = document.getElementById('mobileSearchOverlay');
+      overlay.classList.toggle('hidden');
+      if (!overlay.classList.contains('hidden')) {
+        document.getElementById('mobileSearchInput').focus();
+      }
+    }
 
     // Shorts Player
     function loadShort(index) {
@@ -1021,7 +1130,7 @@
         showToast(`تم إلغاء الاشتراك من ${currentVideo.channelName}`);
       } else {
         subscribedChannels.add(currentVideo.channelName);
-        showToast(`تم الاشتراك بنجاح في ${currentVideo.channelName}! 🎉`);
+        showToast(`تم الاشتراك في ${currentVideo.channelName}! 🎉`);
       }
       updateSubscribeButtonUI();
     }
@@ -1031,10 +1140,10 @@
       if (!btn || !currentVideo) return;
       if (subscribedChannels.has(currentVideo.channelName)) {
         btn.innerText = 'مشترك ✔';
-        btn.className = 'mr-3 bg-[#272727] text-gray-300 font-bold px-4 py-2 rounded-full text-xs hover:bg-[#383838] transition border border-[#383838]';
+        btn.className = 'mr-auto sm:mr-3 bg-[#272727] text-gray-300 font-bold px-4 py-1.5 sm:py-2 rounded-full text-xs hover:bg-[#383838] transition border border-[#383838] shrink-0';
       } else {
         btn.innerText = 'اشتراك';
-        btn.className = 'mr-3 bg-white text-black font-bold px-4 py-2 rounded-full text-xs hover:bg-gray-200 transition shadow-lg';
+        btn.className = 'mr-auto sm:mr-3 bg-white text-black font-bold px-4 py-1.5 sm:py-2 rounded-full text-xs hover:bg-gray-200 transition shadow-lg shrink-0';
       }
     }
 
@@ -1065,13 +1174,13 @@
     // Comments Logic
     function renderComments(videoId) {
       const list = commentsStore[videoId] || [
-        { user: 'عبدالله أحمد', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100', text: 'فيديو رائع ومحتوى قيم جداً من أفضل منصة عز تيوب!', time: 'قبل 3 ساعات' }
+        { user: 'عبدالله أحمد', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100', text: 'فيديو رائع ومحتوى قيم جداً من منصة عز تيوب!', time: 'قبل 3 ساعات' }
       ];
       document.getElementById('commentsCount').innerText = list.length;
       const container = document.getElementById('commentsList');
       container.innerHTML = list.map(c => `
-        <div class="flex gap-3 text-xs">
-          <img src="${c.avatar}" class="w-8 h-8 rounded-full object-cover shrink-0">
+        <div class="flex gap-2.5 sm:gap-3 text-xs">
+          <img src="${c.avatar}" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover shrink-0">
           <div class="space-y-1">
             <div class="flex items-center gap-2">
               <span class="font-bold text-white">${c.user}</span>
@@ -1111,7 +1220,7 @@
     }
 
     /* ==========================================================================
-       6. UI UTILITIES (Modals, Toast, Sidebar Toggle)
+       6. UI UTILITIES (Modals, Toast, Dynamic Menus)
        ========================================================================== */
 
     function openShareModal() {
@@ -1191,16 +1300,8 @@
     }
 
     function toggleNotifications() {
-      showToast('ليس لديك إشعارات جديدة غير مقروءة');
+      showToast('ليس لديك إشعارات جديدة');
     }
-
-    // Toggle Sidebar Width
-    document.getElementById('toggleSidebarBtn').addEventListener('click', () => {
-      const sidebar = document.getElementById('sidebar');
-      sidebar.classList.toggle('w-64');
-      sidebar.classList.toggle('w-0');
-      sidebar.classList.toggle('overflow-hidden');
-    });
 
     // Toast Notification helper
     function showToast(msg) {
